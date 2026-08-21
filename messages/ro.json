@@ -133,7 +133,8 @@
     "makeModel": "Marcă și model",
     "homeDelivery": "Mașina vine la tine acasă!",
     "homeDeliveryShort": "Livrare la domiciliu",
-    "colorLabel": "Culoare"
+    "colorLabel": "Culoare",
+    "vatNonDeductible": "TVA nedeductibilă"
   },
   "carDetail": {
     "specs": "Specificații",
@@ -234,7 +235,7 @@
     "phoneLabel": "Telefon",
     "emailLabel": "E-mail",
     "hoursLabel": "Program",
-    "hoursValue": "Luni–Vineri: 09:00–18:00 · Sâmbătă: 09:00–14:00",
+    "hoursValue": "Luni–Vineri: 09:00–17:00 · Sâmbătă–Duminică: 10:00–14:00",
     "mapTitle": "Locația noastră",
     "formTitle": "Trimite-ne un mesaj",
     "messageLabel": "Mesajul tău",
@@ -293,7 +294,7 @@
     "commissionLabel": "Comision la vânzare",
     "commissionValue": "5% din prețul final de vânzare",
     "parkingLabel": "Taxă de intermediere",
-    "parkingValue": "250 lei/lună",
+    "parkingValue": "250 lei/lună (TVA inclus)",
     "formTitle": "Solicită vânzarea în consignație",
     "carMake": "Marca",
     "carModel": "Modelul",

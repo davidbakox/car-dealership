@@ -256,6 +256,11 @@ export default async function CarDetailPage({
                 <p className="mt-4 font-display text-4xl font-semibold text-accent-hover">
                   {formatPrice(car.price, car.currency)}
                 </p>
+                {!car.is_consignment && (
+                  <p className="mt-1 text-xs text-ink-faint">
+                    {tCars("vatNonDeductible")}
+                  </p>
+                )}
 
                 <dl className="mt-4 grid grid-cols-3 gap-2 border-t border-line pt-4 text-center">
                   {[

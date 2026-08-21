@@ -133,7 +133,8 @@
     "makeModel": "Márka és modell",
     "homeDelivery": "Az autót házhoz visszük!",
     "homeDeliveryShort": "Házhozszállítás",
-    "colorLabel": "Szín"
+    "colorLabel": "Szín",
+    "vatNonDeductible": "Nem levonható ÁFA"
   },
   "carDetail": {
     "specs": "Műszaki adatok",
@@ -234,7 +235,7 @@
     "phoneLabel": "Telefon",
     "emailLabel": "E-mail",
     "hoursLabel": "Nyitvatartás",
-    "hoursValue": "Hétfő–Péntek: 09:00–18:00 · Szombat: 09:00–14:00",
+    "hoursValue": "Hétfő–Péntek: 09:00–17:00 · Szombat–Vasárnap: 10:00–14:00",
     "mapTitle": "A helyünk",
     "formTitle": "Küldj nekünk üzenetet",
     "messageLabel": "Az üzeneted",
@@ -293,7 +294,7 @@
     "commissionLabel": "Értékesítési jutalék",
     "commissionValue": "A végső eladási ár 5 %-a",
     "parkingLabel": "Közvetítési díj",
-    "parkingValue": "250 lej/hónap",
+    "parkingValue": "250 lej/hónap (TVA inclus)",
     "formTitle": "Konszignációs értékesítés kérése",
     "carMake": "Márka",
     "carModel": "Modell",

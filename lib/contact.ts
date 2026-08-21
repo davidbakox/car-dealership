@@ -1,7 +1,7 @@
 // Single source of truth for business and legal contact details.
 export const LEGAL_NAME = "DENISRENTCAR SRL";
 export const TRADE_NAME = "Dennis Cars Carei";
-export const CUI = "47863725";
+export const CUI = "RO47863725";
 export const TRADE_REGISTER_NUMBER = "J2023000311309";
 export const EUID = "ROONRC.J2023000311309";
 export const INCORPORATION_DATE = "22.03.2023";

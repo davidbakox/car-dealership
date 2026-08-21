@@ -8,6 +8,7 @@ import SearchPanel from "@/components/public/SearchPanel";
 import BodyTypeGrid from "@/components/public/BodyTypeGrid";
 import Reveal from "@/components/ui/Reveal";
 import Icon from "@/components/ui/Icon";
+import Particles from "@/components/ui/Particles";
 import { formatPrice } from "@/lib/format";
 import { sortByAvailability } from "@/lib/pricing";
 import { modelsByMake } from "@/lib/car-filters";
@@ -157,6 +158,10 @@ function Hero({
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,theme(colors.accent.soft),transparent_60%)]" />
         )}
       </div>
+
+      {/* Motes drift over the darkened photo, never over the copy: the field
+          is a sibling of the backdrop, and everything below is `relative`. */}
+      <Particles count={22} seed={3} className="text-accent-hover" />
 
       <div className="relative mx-auto max-w-content px-4 pb-10 pt-8 sm:px-6 sm:pt-12">
         <Reveal>
@@ -353,11 +358,12 @@ function CtaBand() {
     <section className="border-t border-line">
       <div className="mx-auto max-w-content px-4 py-14 sm:px-6">
         <Reveal>
-          <div className="flex flex-col items-start gap-6 rounded-card border border-accent/30 bg-accent-soft p-8 sm:flex-row sm:items-center sm:justify-between sm:p-10">
-            <p className="max-w-md font-display text-xl font-semibold text-ink sm:text-2xl">
+          <div className="relative isolate flex flex-col items-start gap-6 overflow-hidden rounded-card border border-accent/30 bg-accent-soft p-8 sm:flex-row sm:items-center sm:justify-between sm:p-10">
+            <Particles count={12} seed={11} className="text-accent-hover" />
+            <p className="relative max-w-md font-display text-xl font-semibold text-ink sm:text-2xl">
               {t("ctaBandText")}
             </p>
-            <div className="flex shrink-0 gap-3">
+            <div className="relative flex shrink-0 gap-3">
               <Link href="/contact" className="btn-primary">
                 {t("ctaBandButton")}
               </Link>
@@ -382,8 +388,9 @@ function SellStrip() {
   ] as const;
 
   return (
-    <section className="border-y border-line bg-surface">
-      <div className="mx-auto max-w-content px-4 py-12 sm:px-6">
+    <section className="relative isolate overflow-hidden border-y border-line bg-surface">
+      <Particles count={14} seed={5} className="text-accent-hover" />
+      <div className="relative mx-auto max-w-content px-4 py-12 sm:px-6">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <SectionHeading title={t("title")} />
           <Link href="/sell" className="btn-primary">

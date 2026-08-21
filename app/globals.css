@@ -162,6 +162,101 @@ textarea {
     }
   }
 
+  /* Drifting light motes (components/ui/Particles.tsx). The field is purely
+     decorative and never intercepts clicks; per-mote position, size, drift
+     vector, opacity and timing arrive as inline styles / custom properties. */
+  .particles {
+    @apply pointer-events-none absolute inset-0 overflow-hidden;
+  }
+  .particles > span {
+    position: absolute;
+    display: block;
+    border-radius: 9999px;
+    background: currentColor;
+    box-shadow: 0 0 8px currentColor;
+    opacity: 0;
+    animation-name: mote-drift;
+    animation-timing-function: ease-in-out;
+    animation-iteration-count: infinite;
+    /* No will-change: a page carries ~60 motes, and browsers already promote an
+       element while its transform/opacity animation runs. Hinting each one
+       would just hold that many extra layers in memory. */
+  }
+  /* Returns to the origin at 100% so the loop needs no fade seam. With motion
+     reduced the animation is cut short and the base opacity: 0 hides them. */
+  @keyframes mote-drift {
+    0% {
+      opacity: 0;
+      transform: translate3d(0, 0, 0) scale(0.85);
+    }
+    20%,
+    80% {
+      opacity: var(--mote-o, 0.3);
+    }
+    50% {
+      transform: translate3d(var(--mote-x, 12px), var(--mote-y, -28px), 0) scale(1);
+    }
+    100% {
+      opacity: 0;
+      transform: translate3d(0, 0, 0) scale(0.85);
+    }
+  }
+
+  /* Footer wave band (components/public/FooterWaves.tsx). Each layer is one
+     SVG at 200% width; translating it by -50% moves it exactly one container
+     width, which matches the path's repeat period — hence a seamless loop. */
+  .footer-waves {
+    @apply relative w-full overflow-hidden;
+    height: 68px;
+    line-height: 0;
+  }
+  @screen sm {
+    .footer-waves {
+      height: 100px;
+    }
+  }
+  .footer-wave {
+    position: absolute;
+    left: 0;
+    bottom: -1px; /* hides the hairline between the wave and the footer body */
+    display: block;
+    width: 200%;
+    height: 100%;
+    will-change: transform;
+  }
+  .footer-wave path {
+    fill: currentColor;
+  }
+  .footer-wave--back {
+    color: rgb(96 118 29 / 0.22);
+    animation: wave-slide 26s linear infinite;
+  }
+  .footer-wave--mid {
+    color: rgb(96 118 29 / 0.38);
+    animation: wave-slide 17s linear infinite reverse;
+  }
+  .footer-wave--front {
+    color: theme(colors.surface);
+    animation: wave-slide 12s linear infinite;
+  }
+  /* Rides on the front wave to give the footer edge a readable contour —
+     `vector-effect` keeps it 2px thin despite the non-uniform viewBox stretch. */
+  .footer-wave--line {
+    color: rgb(126 154 38 / 0.75);
+    animation: wave-slide 12s linear infinite;
+  }
+  .footer-wave--line path {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    vector-effect: non-scaling-stroke;
+  }
+  @keyframes wave-slide {
+    to {
+      transform: translate3d(-50%, 0, 0);
+    }
+  }
+
   /* Skeleton shimmer block */
   .skeleton {
     @apply relative overflow-hidden rounded bg-surface-2;

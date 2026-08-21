@@ -136,9 +136,19 @@ export default function CarCard({ car }: { car: Car }) {
         </dl>
 
         <div className="mt-4 flex items-center justify-between gap-3 border-t border-line pt-3">
-          <p className="font-display text-xl font-semibold text-ink">
-            {formatPrice(car.price, car.currency)}
-          </p>
+          <div className="min-w-0">
+            <p className="font-display text-xl font-semibold text-ink">
+              {formatPrice(car.price, car.currency)}
+            </p>
+            {/* Dealer-owned stock is sold with a non-deductible-VAT invoice;
+                a consignment car is sold by its private owner, so no VAT note
+                applies there at all. */}
+            {!car.is_consignment && (
+              <p className="mt-0.5 truncate text-[11px] text-ink-faint">
+                {tc("vatNonDeductible")}
+              </p>
+            )}
+          </div>
           <span className="inline-flex items-center gap-1.5 rounded-lg bg-accent px-3.5 py-2 text-sm font-medium text-white transition-colors group-hover:bg-accent-hover">
             {tc("details")}
             <Icon name="arrow-right" size={15} />
