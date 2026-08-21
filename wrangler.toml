@@ -1,0 +1,8 @@
+name = "car-dealership"
+compatibility_date = "2024-09-23"
+
+# Required so the Workers runtime exposes Node-compatible built-ins that
+# @cloudflare/next-on-pages and the Supabase client may rely on.
+compatibility_flags = ["nodejs_compat"]
+
+pages_build_output_dir = ".vercel/output/static"

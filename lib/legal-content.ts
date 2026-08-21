@@ -1,0 +1,618 @@
+import {
+  CUI,
+  EMAIL,
+  EUID,
+  INCORPORATION_DATE,
+  LEGAL_NAME,
+  PHONE,
+  PRIMARY_CONTACT_NAME,
+  REGISTERED_OFFICE,
+  SECONDARY_CONTACT_NAME,
+  SECONDARY_PHONE,
+  TRADE_REGISTER_NUMBER,
+} from "@/lib/contact";
+
+export type LegalLink = {
+  label: string;
+  href: string;
+};
+
+export type LegalSection = {
+  title: string;
+  paragraphs?: string[];
+  bullets?: string[];
+  links?: LegalLink[];
+  table?: {
+    headers: string[];
+    rows: string[][];
+  };
+  warning?: string;
+};
+
+export type LegalDocumentContent = {
+  title: string;
+  description: string;
+  lead: string;
+  updated: string;
+  settingsAction?: string;
+  sections: LegalSection[];
+};
+
+type Locale = "ro" | "hu";
+type DocumentKey = "legal" | "privacy" | "cookies";
+
+const commonLinks = {
+  anpcComplaint: "https://eservicii.anpc.ro/",
+  anpcSal: "https://reclamatiisal.anpc.ro/",
+  anspdcp: "https://www.dataprotection.ro/",
+  googlePrivacy: "https://policies.google.com/privacy",
+  googleCookies: "https://policies.google.com/technologies/cookies",
+  law365: "https://legislatie.just.ro/Public/DetaliiDocument/77218",
+  law506: "https://legislatie.just.ro/Public/DetaliiDocument/56973",
+  oug140: "https://legislatie.just.ro/Public/DetaliiDocument/250044",
+};
+
+const ro: Record<DocumentKey, LegalDocumentContent> = {
+  legal: {
+    title: "Informații legale",
+    description:
+      "Datele operatorului Dennis Cars Carei, condițiile de utilizare a site-ului și informații pentru consumatori.",
+    lead:
+      "Această pagină explică cine administrează site-ul, ce rol au anunțurile auto și ce drepturi au consumatorii.",
+    updated: "Ultima actualizare: 2 august 2026",
+    sections: [
+      {
+        title: "1. Identificarea operatorului",
+        bullets: [
+          "Denumire comercială: Dennis Cars Carei",
+          `Denumire juridică: ${LEGAL_NAME}`,
+          `CUI/CIF: ${CUI}`,
+          `Nr. Registrul Comerțului: ${TRADE_REGISTER_NUMBER}`,
+          `EUID: ${EUID}`,
+          `Data înființării: ${INCORPORATION_DATE}`,
+          `Sediu social: ${REGISTERED_OFFICE}`,
+          "Punct de lucru: Str. Mihai Viteazu nr. 57, Carei, jud. Satu Mare, România",
+          `Telefon – ${PRIMARY_CONTACT_NAME}: ${PHONE}`,
+          `Telefon – ${SECONDARY_CONTACT_NAME}: ${SECONDARY_PHONE}`,
+          `E-mail: ${EMAIL}`,
+        ],
+      },
+      {
+        title: "2. Rolul site-ului",
+        paragraphs: [
+          "Site-ul prezintă autoturisme, servicii de consignație, posibilități de schimb/buy-back și informații de contact. Trimiterea unui formular reprezintă doar o solicitare de contact sau o cerere preliminară.",
+          "Site-ul nu permite în prezent cumpărarea, rezervarea cu plată sau încheierea integrală online a unui contract. Un contract se încheie numai după verificarea mașinii, confirmarea condițiilor și semnarea documentelor aplicabile.",
+        ],
+      },
+      {
+        title: "3. Anunțuri, disponibilitate și prețuri",
+        paragraphs: [
+          "Fotografiile, descrierile, kilometrajul, dotările, prețul și starea de disponibilitate sunt publicate cu scop informativ. Informațiile esențiale se confirmă înainte de semnarea contractului.",
+          "Prețul final, moneda, regimul TVA, eventualele costuri suplimentare și condițiile de finanțare trebuie comunicate clar pentru fiecare ofertă. O eroare evidentă de redactare sau o actualizare întârziată a stocului nu creează automat obligația de vânzare.",
+        ],
+      },
+      {
+        title: "4. Garanția legală pentru autoturisme second-hand",
+        paragraphs: [
+          "Pentru vânzările către consumatori se aplică garanția legală de conformitate prevăzută de OUG nr. 140/2021. Pentru bunurile de ocazie, perioada poate fi redusă prin acord la minimum un an de la livrare.",
+          "Mențiunea „12 luni garanție” de pe site nu limitează drepturile legale ale consumatorului. Acoperirea exactă, excluderile permise de lege și procedura de remediere trebuie să apară în contract și în certificatul de garanție.",
+        ],
+        links: [
+          {
+            label: "OUG nr. 140/2021 – Portal Legislativ",
+            href: commonLinks.oug140,
+          },
+        ],
+      },
+      {
+        title: "5. Consignație, buy-back și finanțare",
+        paragraphs: [
+          "Cererea de consignație nu constituie contract. Comisionul, taxa de intermediere, durata, obligațiile părților și condițiile de încetare vor fi stabilite în contractul de consignație.",
+          "Finanțarea este oferită de partenerul financiar indicat pe site, după propria analiză și propriile condiții. Dennis Cars Carei nu garantează aprobarea unei finanțări.",
+        ],
+      },
+      {
+        title: "6. Reclamații și soluționarea alternativă a litigiilor",
+        paragraphs: [
+          "Pentru rezolvarea unei probleme, consumatorul este încurajat să contacteze mai întâi operatorul. Acest demers nu limitează dreptul de a sesiza autoritățile sau instanțele competente.",
+          "Platforma europeană SOL/ODR nu mai este indicată deoarece a fost închisă. Pentru România sunt disponibile portalul ANPC și platforma națională SAL.",
+        ],
+        links: [
+          {
+            label: "Depune o reclamație la ANPC",
+            href: commonLinks.anpcComplaint,
+          },
+          {
+            label: "Soluționare alternativă a litigiilor – SAL",
+            href: commonLinks.anpcSal,
+          },
+        ],
+      },
+      {
+        title: "7. Proprietate intelectuală și utilizarea site-ului",
+        paragraphs: [
+          "Textele, elementele grafice, identitatea vizuală și fotografiile sunt protejate de legislația aplicabilă. Copierea sau reutilizarea lor comercială necesită acordul titularului drepturilor, cu excepția utilizărilor permise de lege.",
+          "Este interzisă folosirea site-ului pentru transmiterea de conținut ilegal, tentative de acces neautorizat, perturbarea serviciului sau colectarea automată abuzivă de date.",
+        ],
+      },
+      {
+        title: "8. Legea aplicabilă",
+        paragraphs: [
+          "Site-ul și relațiile cu consumatorii sunt guvernate de legea română și de normele obligatorii ale Uniunii Europene aplicabile. Nicio prevedere de pe această pagină nu poate restrânge drepturile imperative ale consumatorilor.",
+        ],
+        links: [
+          {
+            label: "Legea nr. 365/2002 privind comerțul electronic",
+            href: commonLinks.law365,
+          },
+        ],
+      },
+    ],
+  },
+  privacy: {
+    title: "Politica de confidențialitate",
+    description:
+      "Cum colectează, folosește, păstrează și protejează Dennis Cars Carei datele cu caracter personal.",
+    lead:
+      "Politica descrie prelucrarea datelor trimise prin formularele site-ului și datele tehnice necesare funcționării sale.",
+    updated: "Ultima actualizare: 2 august 2026",
+    sections: [
+      {
+        title: "1. Operatorul datelor",
+        bullets: [
+          `Operator: ${LEGAL_NAME}, denumire comercială Dennis Cars Carei`,
+          `CUI/CIF: ${CUI}`,
+          `Sediu social și adresă de corespondență: ${REGISTERED_OFFICE}`,
+          "Punct de lucru: Str. Mihai Viteazu nr. 57, Carei, jud. Satu Mare, România",
+          `Telefon – ${PRIMARY_CONTACT_NAME}: ${PHONE}`,
+          `Telefon – ${SECONDARY_CONTACT_NAME}: ${SECONDARY_PHONE}`,
+          `E-mail pentru protecția datelor: ${EMAIL}`,
+        ],
+      },
+      {
+        title: "2. Datele pe care le prelucrăm",
+        bullets: [
+          "Formular de contact: nume, telefon și conținutul mesajului.",
+          "Cerere despre o mașină: nume, telefon, e-mail, mașina aleasă și mesajul opțional.",
+          "Cerere de consignație: nume, telefon, e-mail, marca, modelul, anul, kilometrajul și detaliile transmise despre autoturism.",
+          "Date tehnice: adresă IP, data și ora accesului, tipul dispozitivului/browserului, paginile solicitate și jurnale de securitate, în măsura în care sunt generate de furnizorii de hosting.",
+          "Preferințe: limba selectată și alegerea privind conținutul extern.",
+        ],
+      },
+      {
+        title: "3. Scopuri și temeiuri juridice",
+        bullets: [
+          "Răspuns la solicitări, programarea unei vizionări și demersuri precontractuale – art. 6 alin. (1) lit. b) GDPR.",
+          "Gestionarea vânzării, consignației, garanțiilor și obligațiilor fiscale/contabile – executarea contractului și obligații legale, art. 6 alin. (1) lit. b) și c) GDPR.",
+          "Securitatea site-ului, prevenirea abuzurilor și apărarea drepturilor – interes legitim, art. 6 alin. (1) lit. f) GDPR.",
+          "Încărcarea Google Maps și a tehnologiilor terțe asociate – consimțământ, art. 6 alin. (1) lit. a) GDPR și art. 4 alin. (5) din Legea nr. 506/2004.",
+        ],
+      },
+      {
+        title: "4. Destinatari și furnizori",
+        paragraphs: [
+          "Accesul este limitat la persoanele care gestionează solicitările și administrarea site-ului. Datele pot fi prelucrate de furnizori IT contractați, inclusiv servicii de hosting, bază de date, stocare, securitate și mentenanță.",
+          "Arhitectura actuală folosește Supabase pentru baza de date și autentificare administrativă și Cloudflare pentru infrastructură/stocare. Google primește date direct de la browser numai dacă utilizatorul permite conținutul extern și harta este încărcată.",
+          "Datele pot fi comunicate autorităților, consultanților sau instanțelor atunci când există o obligație legală ori este necesar pentru apărarea unui drept.",
+        ],
+      },
+      {
+        title: "5. Transferuri internaționale",
+        paragraphs: [
+          "Unii furnizori pot procesa date și în afara Spațiului Economic European. În astfel de cazuri trebuie utilizate mecanisme recunoscute de GDPR, precum decizii de adecvare sau clauze contractuale standard, împreună cu măsuri suplimentare atunci când sunt necesare.",
+        ],
+      },
+      {
+        title: "6. Perioade de păstrare",
+        bullets: [
+          "Solicitări fără contract: pe durata soluționării și cel mult 24 de luni de la ultima interacțiune, dacă nu există un litigiu sau o obligație legală de păstrare.",
+          "Documente contractuale, contabile și de garanție: pe durata contractului și ulterior conform termenelor legale aplicabile.",
+          "Jurnale tehnice și de securitate: numai pentru perioada necesară securității și diagnosticării, conform configurației furnizorilor.",
+          "Preferința de consimțământ: până la ștergerea ei de către utilizator sau schimbarea versiunii politicii.",
+        ],
+      },
+      {
+        title: "7. Drepturile persoanei vizate",
+        bullets: [
+          "dreptul la informare și acces;",
+          "dreptul la rectificare și, în cazurile prevăzute de lege, la ștergere;",
+          "dreptul la restricționarea prelucrării și la portabilitate;",
+          "dreptul de opoziție față de prelucrările bazate pe interes legitim;",
+          "dreptul de a retrage consimțământul în orice moment, fără a afecta prelucrarea anterioară;",
+          "dreptul de a depune o plângere la ANSPDCP sau de a se adresa instanței.",
+        ],
+        links: [
+          {
+            label: "Autoritatea Națională de Supraveghere – ANSPDCP",
+            href: commonLinks.anspdcp,
+          },
+        ],
+      },
+      {
+        title: "8. Decizii automate și minori",
+        paragraphs: [
+          "Site-ul nu ia decizii bazate exclusiv pe prelucrare automată și nu realizează profilare. Serviciile nu sunt adresate direct minorilor; persoanele sub 18 ani nu ar trebui să trimită formulare fără implicarea reprezentantului legal.",
+        ],
+      },
+      {
+        title: "9. Securitate și actualizări",
+        paragraphs: [
+          "Sunt utilizate măsuri tehnice și organizatorice rezonabile pentru limitarea accesului, protejarea conturilor administrative și transmiterea securizată a datelor. Niciun sistem nu poate garanta securitate absolută.",
+          "Politica poate fi actualizată atunci când se schimbă serviciile, furnizorii sau cerințele legale. Data versiunii curente este afișată la începutul paginii.",
+        ],
+      },
+    ],
+  },
+  cookies: {
+    title: "Politica de cookies",
+    description:
+      "Cookie-urile și tehnologiile similare folosite de site-ul Dennis Cars Carei și modul de schimbare a preferințelor.",
+    lead:
+      "Site-ul folosește doar tehnologii necesare funcționării și, cu acordul utilizatorului, conținut extern Google Maps.",
+    updated: "Ultima actualizare: 2 august 2026",
+    settingsAction: "Deschide setările cookies",
+    sections: [
+      {
+        title: "1. Ce sunt cookie-urile",
+        paragraphs: [
+          "Cookie-urile sunt fișiere text mici salvate de browser. Tehnologii similare, precum local storage, pot memora preferințe pe dispozitiv. Legea aplicabilă tratează atât stocarea, cât și accesul la informații de pe dispozitiv.",
+        ],
+      },
+      {
+        title: "2. Ce folosește acest site",
+        table: {
+          headers: ["Tehnologie", "Furnizor", "Scop", "Durată"],
+          rows: [
+            [
+              "NEXT_LOCALE",
+              "Dennis Cars Carei",
+              "Memorează limba română/maghiară și permite rutarea corectă. Necesar.",
+              "1 an",
+            ],
+            [
+              "dennis-cars-cookie-consent-v1 (local storage)",
+              "Dennis Cars Carei",
+              "Memorează dacă a fost permis conținutul extern. Necesar pentru respectarea alegerii.",
+              "Până la ștergere sau schimbarea versiunii politicii",
+            ],
+            [
+              "Cookie-uri și identificatori Google Maps, de exemplu NID, _Secure-ENID sau SOCS",
+              "Google",
+              "Furnizarea hărții, securitate, preferințe și alte scopuri descrise de Google. Sunt posibile numai după acordul pentru conținut extern.",
+              "Variabilă; conform politicilor Google (de regulă până la 13 luni pentru exemplele enumerate)",
+            ],
+          ],
+        },
+      },
+      {
+        title: "3. Conținut extern Google Maps",
+        paragraphs: [
+          "Harta este blocată implicit. Înainte de consimțământ, browserul nu încarcă iframe-ul Google Maps și nu trimite o solicitare către Google prin această funcție.",
+          "După activare, Google poate primi adresa IP, informații despre dispozitiv/browser, pagina de proveniență și interacțiunile cu harta și poate folosi cookie-uri ori stocare locală conform propriilor politici.",
+        ],
+        links: [
+          {
+            label: "Politica de confidențialitate Google",
+            href: commonLinks.googlePrivacy,
+          },
+          {
+            label: "Cum folosește Google cookie-urile",
+            href: commonLinks.googleCookies,
+          },
+        ],
+      },
+      {
+        title: "4. Alegerea și retragerea consimțământului",
+        paragraphs: [
+          "La prima vizită poți accepta toate tehnologiile opționale, le poți refuza sau poți deschide setările. Refuzul nu afectează catalogul, formularele sau datele de contact; doar harta încorporată rămâne blocată.",
+          "Alegerea poate fi schimbată în orice moment prin butonul „Setări cookies” din subsol. Ștergerea datelor site-ului din browser elimină și preferința salvată, iar bannerul va fi afișat din nou.",
+        ],
+      },
+      {
+        title: "5. Ce nu folosim în prezent",
+        paragraphs: [
+          "Codul actual nu include Google Analytics, Meta Pixel, instrumente de publicitate comportamentală sau cookie-uri de marketing proprii. Dacă astfel de servicii vor fi adăugate, politica și mecanismul de consimțământ trebuie actualizate înainte de activare.",
+        ],
+      },
+      {
+        title: "6. Temeiul legal și contact",
+        paragraphs: [
+          "Tehnologiile strict necesare sunt utilizate pentru furnizarea funcțiilor solicitate. Tehnologiile opționale se activează numai după consimțământ, potrivit art. 4 alin. (5)-(6) din Legea nr. 506/2004 și cerințelor GDPR.",
+          `Pentru întrebări privind această politică, operatorul poate fi contactat la ${EMAIL}, la sediul social (${REGISTERED_OFFICE}), la ${PHONE} (${PRIMARY_CONTACT_NAME}) sau la ${SECONDARY_PHONE} (${SECONDARY_CONTACT_NAME}).`,
+        ],
+        links: [
+          {
+            label: "Legea nr. 506/2004 – Portal Legislativ",
+            href: commonLinks.law506,
+          },
+        ],
+      },
+    ],
+  },
+};
+
+const hu: Record<DocumentKey, LegalDocumentContent> = {
+  legal: {
+    title: "Jogi információk",
+    description:
+      "A Dennis Cars Carei üzemeltetői adatai, a weboldal használati feltételei és fogyasztói tájékoztatás.",
+    lead:
+      "Ez az oldal bemutatja a weboldal üzemeltetőjét, az autóhirdetések szerepét és a fogyasztók legfontosabb jogait.",
+    updated: "Utolsó frissítés: 2026. augusztus 2.",
+    sections: [
+      {
+        title: "1. Az üzemeltető azonosító adatai",
+        bullets: [
+          "Kereskedelmi név: Dennis Cars Carei",
+          `Hivatalos cégnév: ${LEGAL_NAME}`,
+          `Adószám (CUI/CIF): ${CUI}`,
+          `Cégjegyzékszám: ${TRADE_REGISTER_NUMBER}`,
+          `EUID: ${EUID}`,
+          `Alapítás dátuma: ${INCORPORATION_DATE}`,
+          `Székhely: ${REGISTERED_OFFICE}`,
+          "Telephely: Mihai Viteazu utca 57., Nagykároly, Szatmár megye, Románia",
+          `Telefon – ${PRIMARY_CONTACT_NAME}: ${PHONE}`,
+          `Telefon – ${SECONDARY_CONTACT_NAME}: ${SECONDARY_PHONE}`,
+          `E-mail: ${EMAIL}`,
+        ],
+      },
+      {
+        title: "2. A weboldal szerepe",
+        paragraphs: [
+          "A weboldal gépjárműveket, konszignációs értékesítést, csere/buy-back lehetőséget és elérhetőségeket mutat be. Egy űrlap elküldése kizárólag kapcsolatfelvételi vagy előzetes érdeklődési kérelem.",
+          "Jelenleg nincs online fizetés, kötelező erejű foglalás vagy teljes körű online szerződéskötés. Szerződés csak a jármű ellenőrzése, a feltételek megerősítése és a szükséges dokumentumok aláírása után jön létre.",
+        ],
+      },
+      {
+        title: "3. Hirdetések, elérhetőség és árak",
+        paragraphs: [
+          "A fotók, leírások, futásteljesítmény, felszereltség, ár és készletállapot tájékoztató jellegű. A lényeges adatokat a szerződéskötés előtt meg kell erősíteni.",
+          "A végső árat, pénznemet, áfakezelést, esetleges további költségeket és finanszírozási feltételeket minden ajánlatnál egyértelműen közölni kell. Nyilvánvaló elírás vagy késedelmes készletfrissítés önmagában nem keletkeztet eladási kötelezettséget.",
+        ],
+      },
+      {
+        title: "4. Használt autók törvényes kellékszavatossága",
+        paragraphs: [
+          "A fogyasztóknak történő értékesítésre a 140/2021. számú sürgősségi kormányrendelet szerinti megfelelőségi szabályok vonatkoznak. Használt terméknél a felek a törvényi időtartamot legalább egy évre csökkenthetik.",
+          "A weboldalon jelzett „12 hónap garancia” nem korlátozza a fogyasztó kötelező törvényi jogait. A pontos fedezetet és az ügyintézést a szerződésnek és a garanciajegynek kell tartalmaznia.",
+        ],
+        links: [
+          {
+            label: "140/2021. sürgősségi kormányrendelet",
+            href: commonLinks.oug140,
+          },
+        ],
+      },
+      {
+        title: "5. Konszignáció, buy-back és finanszírozás",
+        paragraphs: [
+          "A konszignációs kérelem nem szerződés. A jutalékot, közvetítési díjat, időtartamot, a felek kötelezettségeit és a megszűnés feltételeit külön szerződés rögzíti.",
+          "A finanszírozást a weboldalon jelzett pénzügyi partner saját bírálata és feltételei alapján nyújtja. A Dennis Cars Carei nem garantálja a finanszírozás jóváhagyását.",
+        ],
+      },
+      {
+        title: "6. Panaszok és alternatív vitarendezés",
+        paragraphs: [
+          "Probléma esetén a fogyasztó először közvetlenül az üzemeltetőhöz fordulhat. Ez nem korlátozza a hatósági vagy bírósági jogérvényesítést.",
+          "A korábbi uniós ODR/SOL platform megszűnt. Romániában az ANPC panaszügyi portálja és a nemzeti SAL platform érhető el.",
+        ],
+        links: [
+          {
+            label: "Panasz benyújtása az ANPC-hez",
+            href: commonLinks.anpcComplaint,
+          },
+          {
+            label: "Alternatív vitarendezés – SAL",
+            href: commonLinks.anpcSal,
+          },
+        ],
+      },
+      {
+        title: "7. Szellemi tulajdon és használat",
+        paragraphs: [
+          "A szövegek, arculati elemek és fényképek jogi védelem alatt állnak. Kereskedelmi másolásuk vagy újrafelhasználásuk a jogosult engedélyéhez kötött, kivéve a törvény által megengedett eseteket.",
+          "Tilos a weboldalt jogellenes tartalom továbbítására, jogosulatlan hozzáférési kísérletre, a szolgáltatás zavarására vagy visszaélésszerű automatikus adatgyűjtésre használni.",
+        ],
+      },
+      {
+        title: "8. Alkalmazandó jog",
+        paragraphs: [
+          "A weboldalra és a fogyasztói kapcsolatokra a román jog és az Európai Unió kötelező szabályai irányadók. Az itt szereplő rendelkezések nem korlátozhatják a fogyasztók kötelező jogait.",
+        ],
+        links: [
+          {
+            label: "A 365/2002. számú elektronikus kereskedelmi törvény",
+            href: commonLinks.law365,
+          },
+        ],
+      },
+    ],
+  },
+  privacy: {
+    title: "Adatvédelmi tájékoztató",
+    description:
+      "Hogyan gyűjti, használja, őrzi és védi a Dennis Cars Carei a személyes adatokat.",
+    lead:
+      "A tájékoztató az űrlapokon megadott adatok és a weboldal működéséhez szükséges technikai adatok kezelését ismerteti.",
+    updated: "Utolsó frissítés: 2026. augusztus 2.",
+    sections: [
+      {
+        title: "1. Adatkezelő",
+        bullets: [
+          `Adatkezelő: ${LEGAL_NAME}, kereskedelmi név: Dennis Cars Carei`,
+          `Adószám (CUI/CIF): ${CUI}`,
+          `Székhely és levelezési cím: ${REGISTERED_OFFICE}`,
+          "Telephely: Mihai Viteazu utca 57., Nagykároly, Szatmár megye, Románia",
+          `Telefon – ${PRIMARY_CONTACT_NAME}: ${PHONE}`,
+          `Telefon – ${SECONDARY_CONTACT_NAME}: ${SECONDARY_PHONE}`,
+          `Adatvédelmi e-mail: ${EMAIL}`,
+        ],
+      },
+      {
+        title: "2. A kezelt adatok",
+        bullets: [
+          "Kapcsolati űrlap: név, telefonszám és az üzenet tartalma.",
+          "Autóval kapcsolatos érdeklődés: név, telefon, e-mail, kiválasztott jármű és opcionális üzenet.",
+          "Konszignációs kérelem: név, telefon, e-mail, márka, modell, évjárat, futásteljesítmény és a járműről megadott adatok.",
+          "Technikai adatok: IP-cím, hozzáférés ideje, eszköz/böngésző típusa, kért oldalak és biztonsági naplók, amennyiben ezeket a tárhelyszolgáltatók létrehozzák.",
+          "Beállítások: választott nyelv és a külső tartalomra vonatkozó döntés.",
+        ],
+      },
+      {
+        title: "3. Célok és jogalapok",
+        bullets: [
+          "Érdeklődések megválaszolása, megtekintés egyeztetése és szerződéskötést megelőző lépések – GDPR 6. cikk (1) b).",
+          "Értékesítés, konszignáció, garancia, adózási és számviteli kötelezettségek – szerződés és jogi kötelezettség, GDPR 6. cikk (1) b) és c).",
+          "A weboldal biztonsága, visszaélések megelőzése és jogérvényesítés – jogos érdek, GDPR 6. cikk (1) f).",
+          "Google Maps és kapcsolódó külső technológiák betöltése – hozzájárulás, GDPR 6. cikk (1) a) és a 506/2004. törvény 4. cikk (5).",
+        ],
+      },
+      {
+        title: "4. Címzettek és szolgáltatók",
+        paragraphs: [
+          "Az adatokhoz csak a megkereséseket és a weboldalt kezelő személyek férhetnek hozzá. Szerződött IT-szolgáltatók tárhelyet, adatbázist, tárolást, biztonságot és karbantartást biztosíthatnak.",
+          "A jelenlegi rendszer Supabase adatbázist/adminisztrációs hitelesítést és Cloudflare infrastruktúrát/tárolást használ. A Google csak akkor kap adatot közvetlenül a böngészőtől, ha a felhasználó engedélyezi és betöltődik a térkép.",
+          "Adatok hatóságoknak, tanácsadóknak vagy bíróságoknak jogi kötelezettség vagy jogérvényesítés esetén továbbíthatók.",
+        ],
+      },
+      {
+        title: "5. Nemzetközi adattovábbítás",
+        paragraphs: [
+          "Egyes szolgáltatók az EGT-n kívül is kezelhetnek adatokat. Ilyenkor a GDPR által elismert garanciákat – például megfelelőségi határozatot vagy általános szerződési feltételeket – kell alkalmazni.",
+        ],
+      },
+      {
+        title: "6. Megőrzési idők",
+        bullets: [
+          "Szerződés nélküli megkeresések: az ügy lezárásáig, legfeljebb az utolsó kapcsolatfelvételtől számított 24 hónapig, kivéve jogvita vagy kötelező megőrzés esetén.",
+          "Szerződéses, számviteli és garanciális iratok: a szerződés alatt, majd a vonatkozó törvényi határidőkig.",
+          "Technikai és biztonsági naplók: kizárólag a biztonsághoz és hibakereséshez szükséges ideig.",
+          "Hozzájárulási beállítás: törlésig vagy a szabályzat verzióváltásáig.",
+        ],
+      },
+      {
+        title: "7. Az érintett jogai",
+        bullets: [
+          "tájékoztatáshoz és hozzáféréshez való jog;",
+          "helyesbítéshez és törvényi feltételek esetén törléshez való jog;",
+          "az adatkezelés korlátozásához és adathordozhatósághoz való jog;",
+          "tiltakozás a jogos érdeken alapuló adatkezelés ellen;",
+          "a hozzájárulás bármikori visszavonása a korábbi kezelés jogszerűségének érintése nélkül;",
+          "panasz benyújtása az ANSPDCP-hez vagy bírósági jogorvoslat.",
+        ],
+        links: [
+          {
+            label: "Román adatvédelmi hatóság – ANSPDCP",
+            href: commonLinks.anspdcp,
+          },
+        ],
+      },
+      {
+        title: "8. Automatizált döntések és kiskorúak",
+        paragraphs: [
+          "A weboldal nem hoz kizárólag automatizált döntéseket és nem végez profilalkotást. A szolgáltatás nem kiskorúaknak szól; 18 év alatt űrlapot csak törvényes képviselő bevonásával küldjenek.",
+        ],
+      },
+      {
+        title: "9. Biztonság és módosítások",
+        paragraphs: [
+          "Ésszerű technikai és szervezési intézkedések védik az adminisztrációs hozzáférést és az adatok továbbítását. Teljes biztonság egyetlen rendszerben sem garantálható.",
+          "A tájékoztató a szolgáltatások, szolgáltatók vagy jogszabályok változásakor frissülhet. A jelenlegi verzió dátuma az oldal tetején látható.",
+        ],
+      },
+    ],
+  },
+  cookies: {
+    title: "Cookie-szabályzat",
+    description:
+      "A Dennis Cars Carei weboldalán használt cookie-k, hasonló technológiák és a beállítások módosítása.",
+    lead:
+      "A weboldal csak a működéshez szükséges technológiákat, továbbá hozzájárulás esetén külső Google Maps tartalmat használ.",
+    updated: "Utolsó frissítés: 2026. augusztus 2.",
+    settingsAction: "Cookie-beállítások megnyitása",
+    sections: [
+      {
+        title: "1. Mik azok a cookie-k?",
+        paragraphs: [
+          "A cookie a böngésző által tárolt kis szövegfájl. Hasonló technológiák, például a local storage, beállításokat menthetnek az eszközön. A szabályok az eszközön történő tárolásra és az ott tárolt adatok elérésére is vonatkoznak.",
+        ],
+      },
+      {
+        title: "2. A weboldalon használt technológiák",
+        table: {
+          headers: ["Technológia", "Szolgáltató", "Cél", "Időtartam"],
+          rows: [
+            [
+              "NEXT_LOCALE",
+              "Dennis Cars Carei",
+              "Megjegyzi a román/magyar nyelvet és biztosítja a helyes útvonalat. Szükséges.",
+              "1 év",
+            ],
+            [
+              "dennis-cars-cookie-consent-v1 (local storage)",
+              "Dennis Cars Carei",
+              "Megjegyzi a külső tartalom engedélyezését. A választás tiszteletben tartásához szükséges.",
+              "Törlésig vagy a szabályzat verzióváltásáig",
+            ],
+            [
+              "Google Maps cookie-k és azonosítók, például NID, _Secure-ENID vagy SOCS",
+              "Google",
+              "Térkép, biztonság, beállítások és a Google által leírt további célok. Csak a külső tartalom engedélyezése után.",
+              "Változó; a Google szabályzata szerint (a felsorolt példáknál jellemzően legfeljebb 13 hónap)",
+            ],
+          ],
+        },
+      },
+      {
+        title: "3. Külső Google Maps tartalom",
+        paragraphs: [
+          "A térkép alapértelmezetten blokkolt. Hozzájárulás előtt a böngésző nem tölti be a Google Maps iframe-et, így ezen a funkción keresztül nem küld kérést a Google felé.",
+          "Engedélyezés után a Google megkaphatja az IP-címet, az eszköz/böngésző adatait, a hivatkozó oldalt és a térképpel végzett műveleteket, valamint saját szabályzata szerint cookie-kat vagy helyi tárolást használhat.",
+        ],
+        links: [
+          {
+            label: "Google adatvédelmi irányelvek",
+            href: commonLinks.googlePrivacy,
+          },
+          {
+            label: "A Google cookie-használata",
+            href: commonLinks.googleCookies,
+          },
+        ],
+      },
+      {
+        title: "4. Hozzájárulás és visszavonás",
+        paragraphs: [
+          "Első látogatáskor elfogadhatod vagy elutasíthatod az opcionális technológiákat, illetve megnyithatod a részletes beállításokat. Az elutasítás nem érinti a katalógust, az űrlapokat vagy az elérhetőségeket; csak a beágyazott térkép marad blokkolva.",
+          "A választás bármikor módosítható a lábléc „Cookie-beállítások” gombjával. A webhelyadatok böngészőből történő törlése a mentett beállítást is eltávolítja, ezért a banner újra megjelenik.",
+        ],
+      },
+      {
+        title: "5. Amit jelenleg nem használunk",
+        paragraphs: [
+          "A jelenlegi kód nem tartalmaz Google Analytics szolgáltatást, Meta Pixelt, viselkedésalapú hirdetést vagy saját marketing-cookie-t. Ilyen szolgáltatás bevezetése előtt frissíteni kell a szabályzatot és a hozzájárulási rendszert.",
+        ],
+      },
+      {
+        title: "6. Jogalap és kapcsolat",
+        paragraphs: [
+          "A feltétlenül szükséges technológiák a kért funkciók biztosítására szolgálnak. Az opcionális technológiák csak hozzájárulás után aktiválódnak a 506/2004. törvény 4. cikk (5)-(6) és a GDPR alapján.",
+          `A szabályzattal kapcsolatos kérdésekben az adatkezelő a ${EMAIL} e-mail-címen, a székhelyén (${REGISTERED_OFFICE}), a ${PHONE} (${PRIMARY_CONTACT_NAME}) vagy a ${SECONDARY_PHONE} (${SECONDARY_CONTACT_NAME}) telefonszámon érhető el.`,
+        ],
+        links: [
+          {
+            label: "506/2004. törvény – román jogszabálytár",
+            href: commonLinks.law506,
+          },
+        ],
+      },
+    ],
+  },
+};
+
+export function getLegalContent(
+  locale: string,
+  document: DocumentKey
+): LegalDocumentContent {
+  return (locale === "hu" ? hu : ro)[document];
+}

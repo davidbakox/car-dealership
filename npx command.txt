@@ -1,0 +1,2 @@
+cd "C:\Users\david\OneDrive\Desktop\car-dealership"
+npm run check:connections

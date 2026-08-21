@@ -1,0 +1,193 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-base text-ink antialiased font-sans;
+}
+
+/* Inputs: 16px min font prevents iOS zoom-on-focus. */
+input,
+select,
+textarea {
+  font-size: 16px;
+}
+
+@layer components {
+  /* Primary filled button — with a subtle light sweep on hover */
+  .btn-primary {
+    @apply relative inline-flex items-center justify-center gap-2 overflow-hidden rounded bg-accent px-5 py-3 text-sm font-medium text-white
+           transition-all duration-200 ease-smooth hover:bg-accent-hover hover:-translate-y-0.5 hover:shadow-lg hover:shadow-accent/25
+           active:translate-y-0 active:shadow-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/60;
+  }
+  .btn-primary::after {
+    content: "";
+    @apply pointer-events-none absolute inset-0 -translate-x-full;
+    background: linear-gradient(
+      105deg,
+      transparent 40%,
+      rgba(255, 255, 255, 0.18) 50%,
+      transparent 60%
+    );
+    transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .btn-primary:hover::after {
+    transform: translateX(100%);
+  }
+  /* Secondary outline button */
+  .btn-outline {
+    @apply inline-flex items-center justify-center gap-2 rounded border border-line-strong px-5 py-3 text-sm font-medium text-ink
+           transition-all duration-200 ease-smooth hover:border-ink-muted hover:bg-surface
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/60;
+  }
+  .field {
+    @apply w-full rounded border border-line bg-surface-2 px-4 py-3 text-ink placeholder:text-ink-faint
+           outline-none transition focus:border-accent focus:ring-1 focus:ring-accent;
+  }
+  /* Selects: the native dropdown arrow renders inconsistently on dark themes
+     and gets clipped at the field edge. Replace it with our own chevron and
+     reserve right padding so text never collides with it. */
+  .select-field {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239BA1AD' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    padding-right: 2.5rem !important;
+  }
+  .select-field::-ms-expand {
+    display: none;
+  }
+  .card {
+    @apply rounded-card border border-line bg-surface;
+  }
+  /* Nav link with an animated underline that grows from the left */
+  .nav-link {
+    @apply relative;
+  }
+  .nav-link::after {
+    content: "";
+    @apply absolute bottom-0.5 left-3 right-3 h-px origin-left scale-x-0 bg-accent;
+    transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .nav-link:hover::after,
+  .nav-link[data-active="true"]::after {
+    transform: scaleX(1);
+  }
+
+  /* GPU-composited continuous gallery. Mobile keeps native horizontal
+     swiping while the same seamless track continues automatically. */
+  .customer-gallery-viewport {
+    overflow: hidden;
+    contain: layout paint;
+  }
+  .customer-gallery-track {
+    display: flex;
+    width: max-content;
+    animation: customer-gallery-marquee 28s linear infinite;
+    transform: translate3d(0, 0, 0);
+    will-change: transform;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .customer-gallery-track:hover {
+      animation-play-state: paused;
+    }
+  }
+  .customer-gallery-group {
+    display: flex;
+    gap: 3rem;
+    padding-right: 3rem;
+  }
+  .customer-gallery-card {
+    flex: none;
+    overflow: hidden;
+    border-radius: 0.5rem;
+    border: 1px solid theme(colors.line);
+    background: theme(colors.base);
+    padding: 0.5rem 0.5rem 1.25rem;
+    box-shadow: 0 10px 24px rgb(0 0 0 / 0.28);
+    transition:
+      transform 300ms cubic-bezier(0.22, 1, 0.36, 1),
+      border-color 200ms ease;
+  }
+  .customer-gallery-card:hover {
+    z-index: 10;
+    transform: rotate(0deg) scale(1.05);
+    border-color: theme(colors.line-strong);
+  }
+  @keyframes customer-gallery-marquee {
+    to {
+      transform: translate3d(-50%, 0, 0);
+    }
+  }
+
+  @media (max-width: 767px) {
+    .customer-gallery-viewport {
+      overflow-x: auto;
+      overscroll-behavior-inline: contain;
+      scroll-snap-type: x mandatory;
+      scroll-padding-inline: 1rem;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+    }
+    .customer-gallery-viewport::-webkit-scrollbar {
+      display: none;
+    }
+    .customer-gallery-group {
+      gap: 1rem;
+      padding-inline: 1rem;
+    }
+    .customer-gallery-card {
+      scroll-snap-align: center;
+    }
+    .customer-gallery-viewport:active .customer-gallery-track {
+      animation-play-state: paused;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .customer-gallery-track {
+      animation: none;
+      will-change: auto;
+    }
+  }
+
+  /* Skeleton shimmer block */
+  .skeleton {
+    @apply relative overflow-hidden rounded bg-surface-2;
+  }
+  .skeleton::after {
+    @apply absolute inset-0;
+    content: "";
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.05),
+      transparent
+    );
+    transform: translateX(-100%);
+    animation: shimmer 1.4s infinite;
+  }
+}
+
+/* Respect reduced-motion: kill transitions, animations, smooth scroll. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
