@@ -3,6 +3,7 @@ import Image from "next/image";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/routing";
 import Reveal from "@/components/ui/Reveal";
+import SplitWords from "@/components/ui/SplitWords";
 import Icon from "@/components/ui/Icon";
 import { PHONE_HREF } from "@/lib/contact";
 
@@ -51,9 +52,12 @@ export default async function AboutPage({
               <span className="h-px w-8 bg-accent" />
               {t("eyebrow")}
             </div>
-            <h1 className="max-w-3xl font-display text-4xl font-semibold leading-tight text-ink sm:text-5xl lg:text-6xl">
-              {t("title")}
-            </h1>
+            <SplitWords
+              as="h1"
+              text={t("title")}
+              highlightLast={2}
+              className="block max-w-3xl font-display text-4xl font-semibold leading-tight text-ink sm:text-5xl lg:text-6xl"
+            />
             <p className="mt-6 max-w-3xl text-lg leading-relaxed text-ink-muted sm:text-xl">
               {t("lead")}
             </p>

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import SellForm from "@/components/public/SellForm";
 import Reveal from "@/components/ui/Reveal";
+import SplitWords from "@/components/ui/SplitWords";
 import Icon from "@/components/ui/Icon";
 import { PHONE, PHONE_HREF } from "@/lib/contact";
 
@@ -37,9 +38,12 @@ export default async function SellPage({
       <section className="border-b border-line">
         <div className="mx-auto max-w-content px-4 py-14 sm:px-6">
           <Reveal>
-            <h1 className="font-display text-4xl font-semibold text-ink">
-              {t("title")}
-            </h1>
+            <SplitWords
+              as="h1"
+              text={t("title")}
+              highlightLast={1}
+              className="font-display text-4xl font-semibold text-ink"
+            />
             <p className="mt-4 max-w-2xl text-lg text-ink-muted">{t("lead")}</p>
           </Reveal>
         </div>

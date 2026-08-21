@@ -9,6 +9,9 @@ import BodyTypeGrid from "@/components/public/BodyTypeGrid";
 import Reveal from "@/components/ui/Reveal";
 import Icon from "@/components/ui/Icon";
 import Particles from "@/components/ui/Particles";
+import SplitWords from "@/components/ui/SplitWords";
+import Parallax from "@/components/ui/Parallax";
+import TiltCard from "@/components/ui/TiltCard";
 import { formatPrice } from "@/lib/format";
 import { sortByAvailability } from "@/lib/pricing";
 import { modelsByMake } from "@/lib/car-filters";
@@ -103,7 +106,9 @@ export default async function HomePage({
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {latest.map((car, i) => (
               <Reveal key={car.id} index={i % 4} as="article">
-                <CarCard car={car} />
+                <TiltCard className="rounded-card">
+                  <CarCard car={car} />
+                </TiltCard>
               </Reveal>
             ))}
           </div>
@@ -143,14 +148,20 @@ function Hero({
       <div className="absolute inset-0">
         {cover ? (
           <>
-            <Image
-              src={cover}
-              alt=""
-              fill
-              priority
-              sizes="100vw"
-              className="object-cover opacity-40"
-            />
+            {/* Oversized on purpose: the photo travels against the scroll, so
+                it has to overhang the section or it would show an edge. */}
+            <Parallax distance={80} className="absolute inset-x-0 -inset-y-16">
+              <div className="relative h-full w-full">
+                <Image
+                  src={cover}
+                  alt=""
+                  fill
+                  priority
+                  sizes="100vw"
+                  className="object-cover opacity-40"
+                />
+              </div>
+            </Parallax>
             <div className="absolute inset-0 bg-gradient-to-r from-base via-base/85 to-base/40" />
             <div className="absolute inset-0 bg-gradient-to-t from-base via-transparent to-base/60" />
           </>
@@ -161,7 +172,7 @@ function Hero({
 
       {/* Motes drift over the darkened photo, never over the copy: the field
           is a sibling of the backdrop, and everything below is `relative`. */}
-      <Particles count={22} seed={3} className="text-accent-hover" />
+      <Particles count={34} seed={3} className="text-accent-hover" intensity={1.15} />
 
       <div className="relative mx-auto max-w-content px-4 pb-10 pt-8 sm:px-6 sm:pt-12">
         <Reveal>
@@ -169,9 +180,13 @@ function Hero({
             <span className="h-px w-8 bg-accent" />
             {t("inStock", { count: stockCount })}
           </div>
-          <h1 className="max-w-2xl font-display text-4xl font-semibold leading-[1.08] text-ink sm:text-5xl">
-            {t("heroTitle")}
-          </h1>
+          <SplitWords
+            as="h1"
+            text={t("heroTitle")}
+            highlightLast={1}
+            delay={0.1}
+            className="max-w-2xl font-display text-4xl font-semibold leading-[1.08] text-ink sm:text-5xl"
+          />
         </Reveal>
         <Reveal index={1}>
           <p className="mt-4 max-w-2xl text-base leading-relaxed text-ink-muted sm:text-lg">
@@ -337,14 +352,18 @@ function FinancingStrip({ locale }: { locale: "ro" | "hu" }) {
             aria-label={t("financingCta")}
             className="group block overflow-hidden rounded-card border border-line transition-all duration-200 ease-smooth hover:-translate-y-1 hover:border-line-strong hover:shadow-lg hover:shadow-black/30"
           >
-            <Image
-              src={banner.src}
-              alt={banner.alt}
-              width={1748}
-              height={900}
-              sizes="(min-width: 1024px) 660px, (min-width: 640px) 768px, calc(100vw - 2rem)"
-              className="h-auto w-full transition-transform duration-300 ease-smooth group-hover:scale-[1.02]"
-            />
+            {/* Slight overscale gives the parallax room to travel inside the
+                card's overflow-hidden frame without exposing an edge. */}
+            <Parallax distance={26}>
+              <Image
+                src={banner.src}
+                alt={banner.alt}
+                width={1748}
+                height={900}
+                sizes="(min-width: 1024px) 660px, (min-width: 640px) 768px, calc(100vw - 2rem)"
+                className="h-auto w-full scale-110 transition-transform duration-300 ease-smooth group-hover:scale-[1.13]"
+              />
+            </Parallax>
           </Link>
         </Reveal>
       </div>
@@ -359,7 +378,7 @@ function CtaBand() {
       <div className="mx-auto max-w-content px-4 py-14 sm:px-6">
         <Reveal>
           <div className="relative isolate flex flex-col items-start gap-6 overflow-hidden rounded-card border border-accent/30 bg-accent-soft p-8 sm:flex-row sm:items-center sm:justify-between sm:p-10">
-            <Particles count={12} seed={11} className="text-accent-hover" />
+            <Particles count={18} seed={11} className="text-accent-hover" intensity={1.2} />
             <p className="relative max-w-md font-display text-xl font-semibold text-ink sm:text-2xl">
               {t("ctaBandText")}
             </p>
@@ -389,7 +408,7 @@ function SellStrip() {
 
   return (
     <section className="relative isolate overflow-hidden border-y border-line bg-surface">
-      <Particles count={14} seed={5} className="text-accent-hover" />
+      <Particles count={22} seed={5} className="text-accent-hover" intensity={1.1} />
       <div className="relative mx-auto max-w-content px-4 py-12 sm:px-6">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <SectionHeading title={t("title")} />
@@ -421,7 +440,11 @@ function SectionHeading({ title }: { title: string }) {
   return (
     <div className="flex items-center gap-3">
       <span className="h-6 w-1 rounded-full bg-accent" />
-      <h2 className="font-display text-2xl font-semibold text-ink">{title}</h2>
+      <SplitWords
+        as="h2"
+        text={title}
+        className="font-display text-2xl font-semibold text-ink"
+      />
     </div>
   );
 }
