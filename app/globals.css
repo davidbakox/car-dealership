@@ -202,6 +202,154 @@ textarea {
     }
   }
 
+  /* ---------------------------------------------------------------------
+     Page switch (components/ui/RouteTransition.tsx): the wordmark takes over
+     the screen, a blade of light sweeps across, sparks rise, and it clears.
+     The overlay starts fully opaque rather than fading in — by the time it
+     mounts, Next has already swapped in the new page, and fading in would show
+     a frame of it before covering it again.
+     --------------------------------------------------------------------- */
+  .page-wipe {
+    position: fixed;
+    inset: 0;
+    z-index: 110; /* above the cookie banner (90) and its modal (100) */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    pointer-events: none;
+    background: radial-gradient(60% 60% at 50% 50%, #171b0c, #06070a 72%);
+    opacity: 0;
+    visibility: hidden;
+    animation: wipe-fade 980ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  @keyframes wipe-fade {
+    0%,
+    62% {
+      opacity: 1;
+      visibility: visible;
+    }
+    100% {
+      opacity: 0;
+      visibility: hidden;
+    }
+  }
+  /* The glowing disc holding the wordmark. */
+  .page-wipe-mark {
+    position: relative;
+    display: flex;
+    width: clamp(180px, 30vw, 280px);
+    aspect-ratio: 1;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9999px;
+    background: radial-gradient(
+      circle at 50% 42%,
+      rgb(96 118 29 / 0.38),
+      rgb(9 11 6 / 0.92) 72%
+    );
+    box-shadow:
+      0 0 0 1px rgb(126 154 38 / 0.35),
+      0 0 90px -10px rgb(126 154 38 / 0.6);
+    opacity: 0;
+    animation: wipe-mark 980ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  @keyframes wipe-mark {
+    0% {
+      opacity: 0;
+      transform: scale(0.72);
+    }
+    26% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    66% {
+      opacity: 1;
+      transform: scale(1.04);
+    }
+    100% {
+      opacity: 0;
+      transform: scale(1.14);
+    }
+  }
+  /* Blade of light crossing the screen. */
+  .page-wipe::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: -40%;
+    width: 38%;
+    filter: blur(8px);
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgb(163 194 63 / 0.14),
+      rgb(206 226 132 / 0.45),
+      rgb(163 194 63 / 0.14),
+      transparent
+    );
+    animation: wipe-sweep 980ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  @keyframes wipe-sweep {
+    0% {
+      left: -40%;
+    }
+    100% {
+      left: 110%;
+    }
+  }
+  /* Sparks rising through the dark. */
+  .page-wipe-sparks {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+  }
+  .page-wipe-sparks > span {
+    position: absolute;
+    display: block;
+    border-radius: 9999px;
+    background: theme(colors.accent.hover);
+    box-shadow: 0 0 9px rgb(126 154 38 / 0.9);
+    opacity: 0;
+    animation-name: wipe-spark;
+    animation-timing-function: linear;
+    animation-fill-mode: both;
+  }
+  .page-wipe-sparks > span.is-pale {
+    background: #c9e07f;
+    box-shadow: 0 0 10px rgb(201 224 127 / 0.9);
+  }
+  @keyframes wipe-spark {
+    0% {
+      opacity: 0;
+      transform: translateY(30vh) scale(0.4);
+    }
+    20% {
+      opacity: 0.95;
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(-42vh) scale(1);
+    }
+  }
+  /* The incoming page rises as the overlay clears. The last keyframe resets the
+     transform to `none`, so the finished element does not stay a containing
+     block for the position:fixed bars inside a page. */
+  .page-in {
+    animation: page-in 620ms cubic-bezier(0.22, 1, 0.36, 1) 360ms both;
+  }
+  @keyframes page-in {
+    0% {
+      opacity: 0;
+      transform: translateY(14px);
+    }
+    100% {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
   /* Footer wave band (components/public/FooterWaves.tsx). Each layer is one
      SVG at 200% width; translating it by -50% moves it exactly one container
      width, which matches the path's repeat period — hence a seamless loop. */
