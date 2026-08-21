@@ -9,7 +9,7 @@ import {
   BODY_TYPES,
   DRIVETRAINS,
   EURO_NORMS,
-  CAR_FEATURES,
+  FILTER_FEATURES,
 } from "@/lib/types";
 import {
   type CarFilters,
@@ -325,7 +325,7 @@ export default function CarFilterSidebar({
               </span>
               {t("featuresLabel")}
             </legend>
-            {checkboxes("features", CAR_FEATURES, (v) => tft(v), true)}
+            {checkboxes("features", FILTER_FEATURES, (v) => tft(v), true)}
           </fieldset>
         </div>
 

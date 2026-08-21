@@ -33,22 +33,31 @@ npm run dev                        # http://localhost:3000
 3. **Create the storage bucket + policies.** New query → paste
    [`supabase/storage.sql`](supabase/storage.sql) → **Run**. This creates the
    public-read `car-images` bucket (5 MB / image limit, image MIME types only).
-4. **Create the single admin user.** Dashboard → **Authentication → Users → Add
+4. **Run the migrations.** New query → paste each file in
+   [`supabase/migrations/`](supabase/migrations) in numeric order → **Run**.
+   They are additive and safe to re-run:
+   - `002_car_attributes.sql` — body type, drivetrain, Euro norm, engine,
+     seats, consignment / home-delivery flags, equipment (`features`).
+   - `003_car_color.sql` — paint colour.
+
+   Skipping one leaves the admin car form unable to save (the column it posts
+   would not exist yet).
+5. **Create the single admin user.** Dashboard → **Authentication → Users → Add
    user → Create new user**. Enter the owner's email + a strong password, and
    tick **Auto Confirm User** (so no email verification is needed). There is no
    public sign-up — this is the only account.
    Set that same address as the server-only `ADMIN_EMAIL` environment variable.
    Under **Authentication → Sign In / Providers**, turn **off** "Allow new
    users to sign up" so no one can self-register through the API.
-5. **Grab the API keys.** Dashboard → **Project Settings → API**:
+6. **Grab the API keys.** Dashboard → **Project Settings → API**:
    - `Project URL`  → `NEXT_PUBLIC_SUPABASE_URL`
    - `anon` `public` key → `NEXT_PUBLIC_SUPABASE_ANON_KEY`
    - `service_role` `secret` key → `SUPABASE_SERVICE_ROLE_KEY` (**server-only**, never expose)
-6. **Configure password-recovery URLs.** Under **Authentication → URL
+7. **Configure password-recovery URLs.** Under **Authentication → URL
    Configuration**, set **Site URL** to the production origin and add the exact
    redirect URL `https://your-domain/admin-9f3k2/reset-password`. The default
    reset template already links through `{{ .ConfirmationURL }}`.
-7. **Seed sample data** (5 cars + 2 auctions, with placeholder photos uploaded
+8. **Seed sample data** (5 cars + 2 auctions, with placeholder photos uploaded
    to Storage). With `.env.local` filled in:
    ```bash
    npm run seed

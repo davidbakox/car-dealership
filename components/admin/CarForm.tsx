@@ -1,11 +1,20 @@
 "use client";
 
+import { useState } from "react";
 import { useFormState, useFormStatus } from "react-dom";
 import Link from "next/link";
 import ImageUploader from "./ImageUploader";
+import ColorSwatch from "@/components/ui/ColorSwatch";
 import { saveCarAction } from "@/app/(admin)/admin-9f3k2/(protected)/actions";
 import type { ActionState } from "@/lib/form-state";
 import { t } from "@/lib/i18n/config";
+import {
+  BODY_LABELS,
+  DRIVETRAIN_LABELS,
+  COLOR_LABELS,
+  FEATURE_LABELS,
+  FEATURE_GROUP_LABELS,
+} from "@/lib/i18n/admin-catalog";
 import { ADMIN_PATH } from "@/lib/env";
 import {
   FUEL_TYPES,
@@ -14,38 +23,10 @@ import {
   BODY_TYPES,
   DRIVETRAINS,
   EURO_NORMS,
-  CAR_FEATURES,
+  CAR_COLORS,
+  FEATURE_GROUPS,
   type Car,
 } from "@/lib/types";
-
-// Admin-facing Hungarian labels for the catalogue attributes. The admin panel
-// is Hungarian-only and does not run next-intl, so the public site's labels
-// (messages/ro.json + messages/hu.json) can't be reused here.
-const BODY_LABELS: Record<string, string> = {
-  sedan: "Szedan", suv: "SUV", wagon: "Kombi", hatchback: "Ferdehatu",
-  coupe: "Kupe", van: "Haszongepjarmu", minibus: "Kisbusz",
-};
-const DRIVETRAIN_LABELS: Record<string, string> = {
-  fwd: "Elso kerek (2x4)", rwd: "Hatso kerek (2x4)", awd: "Osszkerek (4x4)",
-};
-const FEATURE_LABELS: Record<string, string> = {
-  abs_esp_airbag: "ABS / ESP / Legzsak",
-  electric_mirrors: "Elektromos tukrok",
-  onboard_computer: "Fedelzeti computer",
-  steering_controls: "Kormanykerek-vezerles",
-  air_conditioning: "Klima",
-  climate_control: "Digitalis klima",
-  parking_sensors: "Tolatoradar",
-  rear_camera: "Tolatokamera",
-  cruise_control: "Tempomat",
-  navigation: "Navigacio",
-  heated_seats: "Futheto ulesek",
-  led_xenon: "LED / Xenon fenyszoro",
-  alloy_wheels: "Konnyufem felni",
-  bluetooth: "Bluetooth",
-  isofix: "ISOFIX",
-  tow_bar: "Vonohorog",
-};
 
 function Field({
   label,
@@ -87,6 +68,29 @@ export default function CarForm({ car }: { car?: Car }) {
     {}
   );
   const fe = state.fieldErrors ?? {};
+
+  // Equipment is controlled so each group can show how many boxes are ticked
+  // and offer an all/none shortcut — with ~70 options, hunting through plain
+  // checkboxes to see what a car already has is the slow part of the job.
+  const [features, setFeatures] = useState<Set<string>>(
+    () => new Set(car?.features ?? [])
+  );
+  const toggleFeature = (f: string) =>
+    setFeatures((prev) => {
+      const next = new Set(prev);
+      if (next.has(f)) next.delete(f);
+      else next.add(f);
+      return next;
+    });
+  const setGroup = (items: readonly string[], on: boolean) =>
+    setFeatures((prev) => {
+      const next = new Set(prev);
+      for (const i of items) {
+        if (on) next.add(i);
+        else next.delete(i);
+      }
+      return next;
+    });
 
   return (
     <form action={formAction} className="max-w-3xl space-y-6">
@@ -177,7 +181,7 @@ export default function CarForm({ car }: { car?: Car }) {
       {/* Catalogue attributes — all optional, so a car can go live before
           every spec is known. They drive the public filters and car cards. */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <Field label="Karosszeria" error={fe.body_type}>
+        <Field label="Karosszéria" error={fe.body_type}>
           <select name="body_type" defaultValue={car?.body_type ?? ""} className={input}>
             <option value="">— nincs megadva —</option>
             {BODY_TYPES.map((b) => (
@@ -185,7 +189,7 @@ export default function CarForm({ car }: { car?: Car }) {
             ))}
           </select>
         </Field>
-        <Field label="Hajtas" error={fe.drivetrain}>
+        <Field label="Hajtás" error={fe.drivetrain}>
           <select name="drivetrain" defaultValue={car?.drivetrain ?? ""} className={input}>
             <option value="">— nincs megadva —</option>
             {DRIVETRAINS.map((d) => (
@@ -193,7 +197,7 @@ export default function CarForm({ car }: { car?: Car }) {
             ))}
           </select>
         </Field>
-        <Field label="Karosanyag-besorolas" error={fe.euro_norm}>
+        <Field label="Károsanyag-besorolás" error={fe.euro_norm}>
           <select name="euro_norm" defaultValue={car?.euro_norm ?? ""} className={input}>
             <option value="">— nincs megadva —</option>
             {EURO_NORMS.map((e) => (
@@ -204,7 +208,7 @@ export default function CarForm({ car }: { car?: Car }) {
         <Field label="Motor (pl. 2.0 TDI)" error={fe.engine}>
           <input name="engine" defaultValue={car?.engine ?? ""} className={input} />
         </Field>
-        <Field label="Ulesek szama" error={fe.seats}>
+        <Field label="Ülések száma" error={fe.seats}>
           <input
             name="seats"
             type="number"
@@ -216,10 +220,47 @@ export default function CarForm({ car }: { car?: Car }) {
         </Field>
       </div>
 
+      {/* Paint colour. Radios rather than a <select> so the actual colour is
+          visible while choosing — the same swatch the public page draws. */}
+      <div>
+        <span className="mb-2 block text-sm font-medium">Szín</span>
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+          <label className="cursor-pointer">
+            <input
+              type="radio"
+              name="color"
+              value=""
+              defaultChecked={!car?.color}
+              className="peer sr-only"
+            />
+            <span className="flex items-center gap-2 rounded-lg border border-slate-300 px-2.5 py-2 text-sm text-slate-500 peer-checked:border-brand peer-checked:bg-brand/5 peer-checked:text-slate-900 peer-checked:ring-1 peer-checked:ring-brand peer-focus-visible:ring-2">
+              <span className="h-4 w-4 shrink-0 rounded-full border border-dashed border-slate-400" />
+              Nincs megadva
+            </span>
+          </label>
+          {CAR_COLORS.map((c) => (
+            <label key={c} className="cursor-pointer">
+              <input
+                type="radio"
+                name="color"
+                value={c}
+                defaultChecked={car?.color === c}
+                className="peer sr-only"
+              />
+              <span className="flex items-center gap-2 rounded-lg border border-slate-300 px-2.5 py-2 text-sm peer-checked:border-brand peer-checked:bg-brand/5 peer-checked:font-medium peer-checked:ring-1 peer-checked:ring-brand peer-focus-visible:ring-2">
+                <ColorSwatch color={c} size={16} />
+                {COLOR_LABELS[c]}
+              </span>
+            </label>
+          ))}
+        </div>
+        {fe.color && <span className="mt-1 block text-xs text-red-600">{fe.color}</span>}
+      </div>
+
       {/* Badges shown over the photo on the listing tiles. Both are opt-in per
           car, so nothing is promised to a buyer unless it was ticked here. */}
       <div>
-        <span className="mb-2 block text-sm font-medium">Jelvenyek a hirdetesen</span>
+        <span className="mb-2 block text-sm font-medium">Jelvények a hirdetésen</span>
         <div className="space-y-2">
           <label className="flex items-start gap-2">
             <input
@@ -229,10 +270,10 @@ export default function CarForm({ car }: { car?: Car }) {
               className="mt-0.5 h-4 w-4"
             />
             <span className="text-sm">
-              Konszignacios auto
+              Konszignációs autó
               <span className="block text-xs text-slate-500">
-                Barna jelveny: &bdquo;Se cumpara direct de la proprietar&rdquo; / &bdquo;Kozvetlenul a
-                tulajdonostol&rdquo;, plusz szurheto a &bdquo;Tip vanzare&rdquo; blokkban.
+                Barna jelvény a fotón: &bdquo;Direct de la proprietar&rdquo; /
+                &bdquo;Tulajdonostól&rdquo;, plusz szűrhető a &bdquo;Tip vânzare&rdquo; blokkban.
               </span>
             </span>
           </label>
@@ -244,31 +285,64 @@ export default function CarForm({ car }: { car?: Car }) {
               className="mt-0.5 h-4 w-4"
             />
             <span className="text-sm">
-              Hazhozszallitassal
+              Házhozszállítással
               <span className="block text-xs text-slate-500">
-                Sotet jelveny teherauto ikonnal: &bdquo;Masina vine la tine acasa!&rdquo; / &bdquo;Az autot
-                hazhoz visszuk!&rdquo; Csak akkor pipald be, ha tenyleg vallaljatok.
+                Sötét jelvény teherautó ikonnal: &bdquo;Livrare la domiciliu&rdquo; /
+                &bdquo;Házhozszállítás&rdquo;. Csak akkor pipáld be, ha tényleg vállaljátok.
               </span>
             </span>
           </label>
         </div>
       </div>
 
+      {/* Equipment, grouped exactly like the public car page renders it. */}
       <div>
-        <span className="mb-2 block text-sm font-medium">Felszereltseg</span>
-        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-          {CAR_FEATURES.map((f) => (
-            <label key={f} className="flex items-center gap-2 text-sm">
-              <input
-                type="checkbox"
-                name="features"
-                value={f}
-                defaultChecked={car?.features?.includes(f)}
-                className="h-4 w-4"
-              />
-              {FEATURE_LABELS[f]}
-            </label>
-          ))}
+        <span className="mb-2 block text-sm font-medium">
+          Felszereltség
+          <span className="ml-2 text-xs font-normal text-slate-500">
+            {features.size} kiválasztva
+          </span>
+        </span>
+        <div className="space-y-3">
+          {FEATURE_GROUPS.map((g) => {
+            const count = g.items.filter((i) => features.has(i)).length;
+            const allOn = count === g.items.length;
+            return (
+              <fieldset
+                key={g.key}
+                className="rounded-lg border border-slate-200 bg-slate-50/60 p-4"
+              >
+                <legend className="flex items-center gap-2 px-1 text-sm font-semibold text-slate-700">
+                  {FEATURE_GROUP_LABELS[g.key]}
+                  <span className="text-xs font-normal text-slate-500">
+                    ({count}/{g.items.length})
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setGroup(g.items, !allOn)}
+                    className="text-xs font-normal text-brand underline-offset-2 hover:underline"
+                  >
+                    {allOn ? "egyiket sem" : "mindet"}
+                  </button>
+                </legend>
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                  {g.items.map((f) => (
+                    <label key={f} className="flex cursor-pointer items-center gap-2 text-sm">
+                      <input
+                        type="checkbox"
+                        name="features"
+                        value={f}
+                        checked={features.has(f)}
+                        onChange={() => toggleFeature(f)}
+                        className="h-4 w-4"
+                      />
+                      {FEATURE_LABELS[f]}
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
+            );
+          })}
         </div>
       </div>
 

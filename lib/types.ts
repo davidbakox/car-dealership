@@ -26,6 +26,7 @@ export interface Car {
   euro_norm: string | null;
   engine: string | null;
   seats: number | null;
+  color: string | null;
   is_consignment: boolean;
   has_home_delivery: boolean;
   features: string[];
@@ -102,35 +103,157 @@ export const DRIVETRAINS = ["fwd", "rwd", "awd"] as const;
 
 export const EURO_NORMS = ["euro3", "euro4", "euro5", "euro6"] as const;
 
-// Equipment checkboxes ("Dotări"). Stored as a text[] of these keys, so the
-// labels stay translatable and the data stays language-neutral.
-export const CAR_FEATURES = [
-  "abs_esp_airbag",
-  "electric_mirrors",
-  "onboard_computer",
-  "steering_controls",
-  "air_conditioning",
-  "climate_control",
-  "parking_sensors",
-  "rear_camera",
-  "cruise_control",
-  "navigation",
-  "heated_seats",
-  "led_xenon",
-  "alloy_wheels",
-  "bluetooth",
-  "isofix",
-  "tow_bar",
+// Paint colours. Language-neutral keys like every other catalogue attribute,
+// with a hex swatch so the admin picker and the public spec tile can show the
+// actual colour instead of only naming it.
+export const CAR_COLORS = [
+  "white",
+  "black",
+  "silver",
+  "gray",
+  "blue",
+  "red",
+  "bordeaux",
+  "green",
+  "brown",
+  "beige",
+  "yellow",
+  "orange",
+  "gold",
+  "purple",
+  "other",
 ] as const;
 
-// Equipment grouped for display on the car detail page. Every key in
-// CAR_FEATURES must appear in exactly one group — the detail page renders these
-// groups in order and skips any group the car has nothing from.
+// Swatch fill per colour. "other" has no single fill — ColorSwatch draws a
+// rainbow for it, so it is deliberately absent from this map.
+export const COLOR_SWATCHES: Record<string, string> = {
+  white: "#f4f6f8",
+  black: "#15181c",
+  silver: "#c6cbd2",
+  gray: "#6b7280",
+  blue: "#1d4ed8",
+  red: "#dc2626",
+  bordeaux: "#7c1d24",
+  green: "#15803d",
+  brown: "#6b4423",
+  beige: "#d8c9a6",
+  yellow: "#eab308",
+  orange: "#ea580c",
+  gold: "#b8912f",
+  purple: "#7c3aed",
+};
+
+// Equipment checkboxes ("Dotări"). Stored as a text[] of these keys, so the
+// labels stay translatable and the data stays language-neutral.
+//
+// The catalogue mirrors what the big marketplaces (mobile.de, autovit.ro) list
+// per car, so a Dennis Cars ad can carry the same detail a buyer sees there.
+// NOTE: keys are permanent — car rows store them verbatim. Add new ones at the
+// end of their group; never rename or remove an existing key.
+export const CAR_FEATURES = [
+  // safety & driver assistance
+  "abs_esp_airbag",
+  "isofix",
+  "parking_sensors",
+  "parking_sensors_front",
+  "rear_camera",
+  "camera_360",
+  "park_assist",
+  "blind_spot_assist",
+  "lane_assist",
+  "traffic_sign_recognition",
+  "emergency_brake_assist",
+  "adaptive_cruise_control",
+  "tire_pressure_monitor",
+  "hill_start_assist",
+  "alarm",
+  "central_locking",
+  "immobilizer",
+  // comfort
+  "air_conditioning",
+  "climate_control",
+  "multizone_climate",
+  "heated_seats",
+  "ventilated_seats",
+  "electric_seats",
+  "memory_seats",
+  "leather_seats",
+  "heated_steering_wheel",
+  "electric_mirrors",
+  "heated_mirrors",
+  "folding_mirrors",
+  "electric_windows",
+  "cruise_control",
+  "keyless_entry",
+  "keyless_start",
+  "rain_sensor",
+  "light_sensor",
+  "auto_dimming_mirror",
+  "electric_tailgate",
+  "auxiliary_heating",
+  // multimedia
+  "navigation",
+  "bluetooth",
+  "onboard_computer",
+  "steering_controls",
+  "touchscreen",
+  "carplay_androidauto",
+  "usb_port",
+  "cd_player",
+  "premium_sound",
+  "wireless_charging",
+  "head_up_display",
+  "digital_cockpit",
+  // exterior
+  "led_xenon",
+  "adaptive_lights",
+  "fog_lights",
+  "daytime_running_lights",
+  "alloy_wheels",
+  "tow_bar",
+  "sunroof",
+  "panoramic_roof",
+  "roof_rails",
+  "tinted_windows",
+  "metallic_paint",
+  "winter_tires",
+  "spare_wheel",
+  // paperwork & condition
+  "service_book",
+  "first_owner",
+  "accident_free",
+  "non_smoker",
+  "registered_ro",
+  "valid_itp",
+] as const;
+
+// Equipment grouped for display on the car detail page AND for the admin form,
+// which renders one titled block per group. Every key in CAR_FEATURES must
+// appear in exactly one group — the detail page renders these groups in order
+// and skips any group the car has nothing from.
 export const FEATURE_GROUPS = [
   {
     key: "safety",
     icon: "shield",
-    items: ["abs_esp_airbag", "isofix", "parking_sensors", "rear_camera"],
+    items: [
+      "abs_esp_airbag",
+      "isofix",
+      "parking_sensors",
+      "parking_sensors_front",
+      "rear_camera",
+      "camera_360",
+      "park_assist",
+      "blind_spot_assist",
+      "lane_assist",
+      "traffic_sign_recognition",
+      "emergency_brake_assist",
+      "adaptive_cruise_control",
+      "tire_pressure_monitor",
+      "hill_start_assist",
+      "alarm",
+      "central_locking",
+      "immobilizer",
+    ],
   },
   {
     key: "comfort",
@@ -138,24 +261,102 @@ export const FEATURE_GROUPS = [
     items: [
       "air_conditioning",
       "climate_control",
+      "multizone_climate",
       "heated_seats",
+      "ventilated_seats",
+      "electric_seats",
+      "memory_seats",
+      "leather_seats",
+      "heated_steering_wheel",
       "electric_mirrors",
+      "heated_mirrors",
+      "folding_mirrors",
+      "electric_windows",
       "cruise_control",
+      "keyless_entry",
+      "keyless_start",
+      "rain_sensor",
+      "light_sensor",
+      "auto_dimming_mirror",
+      "electric_tailgate",
+      "auxiliary_heating",
     ],
   },
   {
     key: "multimedia",
     icon: "cog",
-    items: ["navigation", "bluetooth", "onboard_computer", "steering_controls"],
+    items: [
+      "navigation",
+      "bluetooth",
+      "onboard_computer",
+      "steering_controls",
+      "touchscreen",
+      "carplay_androidauto",
+      "usb_port",
+      "cd_player",
+      "premium_sound",
+      "wireless_charging",
+      "head_up_display",
+      "digital_cockpit",
+    ],
   },
   {
     key: "exterior",
     icon: "car",
-    items: ["led_xenon", "alloy_wheels", "tow_bar"],
+    items: [
+      "led_xenon",
+      "adaptive_lights",
+      "fog_lights",
+      "daytime_running_lights",
+      "alloy_wheels",
+      "tow_bar",
+      "sunroof",
+      "panoramic_roof",
+      "roof_rails",
+      "tinted_windows",
+      "metallic_paint",
+      "winter_tires",
+      "spare_wheel",
+    ],
   },
+  {
+    key: "condition",
+    icon: "check",
+    items: [
+      "service_book",
+      "first_owner",
+      "accident_free",
+      "non_smoker",
+      "registered_ro",
+      "valid_itp",
+    ],
+  },
+] as const;
+
+// The public filter rail shows a shortlist, not all ~69 boxes: these are the
+// ones buyers actually narrow a search by. Filtering itself is generic, so a
+// URL naming any other feature key still works.
+export const FILTER_FEATURES = [
+  "air_conditioning",
+  "climate_control",
+  "cruise_control",
+  "heated_seats",
+  "leather_seats",
+  "electric_seats",
+  "navigation",
+  "bluetooth",
+  "carplay_androidauto",
+  "parking_sensors",
+  "rear_camera",
+  "led_xenon",
+  "alloy_wheels",
+  "panoramic_roof",
+  "tow_bar",
+  "isofix",
 ] as const;
 
 export type BodyType = (typeof BODY_TYPES)[number];
 export type Drivetrain = (typeof DRIVETRAINS)[number];
 export type EuroNorm = (typeof EURO_NORMS)[number];
 export type CarFeature = (typeof CAR_FEATURES)[number];
+export type CarColor = (typeof CAR_COLORS)[number];

@@ -57,6 +57,7 @@ export async function saveCarAction(
     body_type: formData.get("body_type"),
     drivetrain: formData.get("drivetrain"),
     euro_norm: formData.get("euro_norm"),
+    color: formData.get("color"),
     engine: formData.get("engine"),
     seats: formData.get("seats"),
     is_consignment: formData.get("is_consignment") === "on",

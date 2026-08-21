@@ -3,6 +3,7 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
 import StatusBadge from "@/components/ui/StatusBadge";
 import Icon from "@/components/ui/Icon";
+import ColorSwatch from "@/components/ui/ColorSwatch";
 import { formatPrice, formatNumber } from "@/lib/format";
 import { isNewInStock } from "@/lib/car-filters";
 import { CITY } from "@/lib/contact";
@@ -18,15 +19,26 @@ export default function CarCard({ car }: { car: Car }) {
   const isSold = car.status === "sold";
   const isNew = isNewInStock(car);
 
-  // [icon, value] pairs — nulls filtered out so the grid never shows a gap.
-  const specs: [string, string][] = [
-    ["calendar", String(car.year)],
-    ["gauge", `${formatNumber(car.mileage)} km`],
-    car.drivetrain ? (["swap", t(`drivetrain.${car.drivetrain}`)] as [string, string]) : null,
-    ["cog", t(`transmission.${car.transmission}`)],
-    car.euro_norm ? (["cloud", t(`euro.${car.euro_norm}`)] as [string, string]) : null,
-    car.seats ? (["seat", String(car.seats)] as [string, string]) : null,
-  ].filter(Boolean) as [string, string][];
+  // Spec chips. A row is dropped entirely when its column is empty, so the
+  // grid never shows a gap. `swatch` replaces the icon with the paint colour.
+  type Spec = { key: string; icon?: string; swatch?: string; value: string };
+  const specs: Spec[] = [
+    { key: "year", icon: "calendar", value: String(car.year) },
+    { key: "mileage", icon: "gauge", value: `${formatNumber(car.mileage)} km` },
+    car.drivetrain && {
+      key: "drivetrain",
+      icon: "swap",
+      value: t(`drivetrain.${car.drivetrain}`),
+    },
+    { key: "transmission", icon: "cog", value: t(`transmission.${car.transmission}`) },
+    car.color && {
+      key: "color",
+      swatch: car.color,
+      value: t(`colors.${car.color}`),
+    },
+    car.euro_norm && { key: "euro", icon: "cloud", value: t(`euro.${car.euro_norm}`) },
+    car.seats && { key: "seats", icon: "seat", value: String(car.seats) },
+  ].filter(Boolean) as Spec[];
 
   return (
     <Link
@@ -64,19 +76,22 @@ export default function CarCard({ car }: { car: Car }) {
         {/* Per-car promises the owner opts into from the admin panel. The
             consignment one is not optional marketing: a consignment car is
             legally sold by its owner, so the buyer must see that up front.
-            `left-14` keeps the row clear of the featured star. */}
+            Compact pills in the bottom-right corner — short labels and small
+            type keep the car itself visible, which is what sells it, and that
+            corner is the one spot no other badge claims (the "new in stock"
+            pill sits top-left, the featured star bottom-left). */}
         {(car.is_consignment || car.has_home_delivery) && (
-          <div className="absolute bottom-3 left-14 right-3 flex flex-wrap justify-end gap-1.5">
+          <div className="absolute bottom-2.5 right-2.5 flex max-w-[70%] flex-col items-end gap-1">
             {car.is_consignment && (
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-reserved px-3 py-1.5 text-xs font-medium text-amber-950 shadow-lg shadow-black/30">
-                <Icon name="user" size={13} />
+              <span className="inline-flex items-center gap-1 rounded-full bg-reserved/95 px-2 py-1 text-[10px] font-semibold leading-none text-amber-950 shadow-md shadow-black/40">
+                <Icon name="user" size={11} />
                 {tc("directFromOwner")}
               </span>
             )}
             {car.has_home_delivery && (
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-base/85 px-3 py-1.5 text-xs font-medium text-ink shadow-lg shadow-black/30 backdrop-blur">
-                <Icon name="truck" size={13} />
-                {tc("homeDelivery")}
+              <span className="inline-flex items-center gap-1 rounded-full bg-base/90 px-2 py-1 text-[10px] font-semibold leading-none text-ink shadow-md shadow-black/40 backdrop-blur">
+                <Icon name="truck" size={11} />
+                {tc("homeDeliveryShort")}
               </span>
             )}
           </div>
@@ -106,12 +121,16 @@ export default function CarCard({ car }: { car: Car }) {
         </div>
 
         <dl className="mt-3 grid grid-cols-2 gap-x-3 gap-y-2 border-t border-line pt-3 text-sm text-ink-muted">
-          {specs.map(([icon, value]) => (
-            <div key={icon} className="flex items-center gap-1.5">
-              <span className="text-accent-hover">
-                <Icon name={icon} size={15} />
+          {specs.map((s) => (
+            <div key={s.key} className="flex items-center gap-1.5">
+              <span className="flex w-[15px] shrink-0 justify-center text-accent-hover">
+                {s.swatch ? (
+                  <ColorSwatch color={s.swatch} size={12} />
+                ) : (
+                  <Icon name={s.icon!} size={15} />
+                )}
               </span>
-              <dd className="truncate">{value}</dd>
+              <dd className="truncate">{s.value}</dd>
             </div>
           ))}
         </dl>

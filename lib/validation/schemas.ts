@@ -7,6 +7,7 @@ import {
   DRIVETRAINS,
   EURO_NORMS,
   CAR_FEATURES,
+  CAR_COLORS,
 } from "@/lib/types";
 
 // Admin <select>s submit "" for "not set" — map that to null rather than
@@ -42,6 +43,7 @@ export const carSchema = z.object({
   body_type: optionalEnum(BODY_TYPES),
   drivetrain: optionalEnum(DRIVETRAINS),
   euro_norm: optionalEnum(EURO_NORMS),
+  color: optionalEnum(CAR_COLORS),
   engine: z
     .preprocess((v) => (v === "" || v === undefined ? null : v), z.string().trim().max(40).nullable())
     .default(null),

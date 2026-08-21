@@ -8,6 +8,7 @@ import Gallery from "@/components/public/Gallery";
 import InquiryForm from "@/components/public/InquiryForm";
 import StatusBadge from "@/components/ui/StatusBadge";
 import Icon from "@/components/ui/Icon";
+import ColorSwatch from "@/components/ui/ColorSwatch";
 import { formatPrice, formatNumber } from "@/lib/format";
 import { SITE_URL } from "@/lib/env";
 import {
@@ -81,6 +82,7 @@ export default async function CarDetailPage({
   const tBody = await getTranslations("bodyType");
   const tDrive = await getTranslations("drivetrain");
   const tEuro = await getTranslations("euro");
+  const tColors = await getTranslations("colors");
   const tFeat = await getTranslations("features");
   const tGroups = await getTranslations("featureGroups");
   const tTrust = await getTranslations("trust");
@@ -106,6 +108,7 @@ export default async function CarDetailPage({
     ...(car.body_type ? { bodyType: car.body_type } : {}),
     ...(car.drivetrain ? { driveWheelConfiguration: car.drivetrain } : {}),
     ...(car.seats ? { seatingCapacity: car.seats } : {}),
+    ...(car.color ? { color: car.color } : {}),
     image: car.images,
     offers: {
       "@type": "Offer",
@@ -137,9 +140,20 @@ export default async function CarDetailPage({
       label: tSpecs("drivetrain"),
       value: tDrive(car.drivetrain),
     },
+    car.color && {
+      icon: "palette",
+      swatch: car.color,
+      label: tSpecs("color"),
+      value: tColors(car.color),
+    },
     car.euro_norm && { icon: "cloud", label: tSpecs("euro"), value: tEuro(car.euro_norm) },
     car.seats && { icon: "seat", label: tSpecs("seats"), value: String(car.seats) },
-  ].filter(Boolean) as { icon: string; label: string; value: string }[];
+  ].filter(Boolean) as {
+    icon: string;
+    swatch?: string;
+    label: string;
+    value: string;
+  }[];
 
   const owned = new Set(car.features ?? []);
   const featureGroups = FEATURE_GROUPS.map((g) => ({
@@ -331,7 +345,11 @@ export default async function CarDetailPage({
                     className="flex items-center gap-3 rounded-card border border-line bg-surface p-3.5"
                   >
                     <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-accent-soft text-accent-hover">
-                      <Icon name={s.icon} size={20} />
+                      {s.swatch ? (
+                        <ColorSwatch color={s.swatch} size={20} />
+                      ) : (
+                        <Icon name={s.icon} size={20} />
+                      )}
                     </span>
                     <div className="min-w-0">
                       <div className="text-[11px] uppercase tracking-wide text-ink-faint">
