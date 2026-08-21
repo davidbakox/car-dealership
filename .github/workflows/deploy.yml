@@ -1,0 +1,62 @@
+name: Deploy to Cloudflare Pages
+
+# The Cloudflare adapter must run on Linux. A native-Windows `vercel build`
+# silently emits an output tree where routes are mapped to the wrong functions
+# (see scripts/verify-build.mjs), so all production builds happen here.
+#
+# This deploys into the EXISTING direct-upload Pages project, which keeps the
+# current project settings and custom domain untouched.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: # lets you re-deploy by hand from the Actions tab
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check filter logic
+        run: npm run check:filters
+
+      - name: Build for Cloudflare Pages
+        # NEXT_PUBLIC_* values are inlined into the bundle at build time, so
+        # they must be present here — the Pages runtime variables are not
+        # enough. Server-only secrets (SUPABASE_SERVICE_ROLE_KEY, ADMIN_EMAIL,
+        # R2_*) are read at runtime and stay configured in the Pages project.
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL }}
+          NEXT_PUBLIC_ADMIN_PATH: ${{ secrets.NEXT_PUBLIC_ADMIN_PATH }}
+          NEXT_PUBLIC_CF_IMAGE_RESIZING: ${{ secrets.NEXT_PUBLIC_CF_IMAGE_RESIZING }}
+          NEXT_PUBLIC_R2_PUBLIC_URL: ${{ secrets.NEXT_PUBLIC_R2_PUBLIC_URL }}
+        run: npx @cloudflare/next-on-pages@1
+
+      - name: Verify the build is not corrupted
+        # Hard gate: a build whose functions serve the wrong routes must never
+        # reach production, even though the build step itself reported success.
+        run: npm run verify:build
+
+      - name: Deploy
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy .vercel/output/static --project-name dennis-cars-carei --branch main
