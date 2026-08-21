@@ -1,12 +1,18 @@
 "use client";
 
+import Image from "next/image";
 import { useState, type ReactNode } from "react";
 import { useReducedMotion } from "framer-motion";
 import Logo from "@/components/public/Logo";
 
-// Page switch: the screen is taken over by the wordmark inside a glowing disc,
-// a blade of olive light sweeps across it, and sparks rise through the dark —
-// then it clears to reveal the new page.
+// Page switch: the screen is taken over by the car above the wordmark, a blade
+// of olive light sweeps across, sparks rise through the dark — then it clears
+// to reveal the new page.
+//
+// The car needs no cut-out: the studio shot is lit against pure black, so
+// `mix-blend-mode: screen` drops its background into the overlay's own dark
+// exactly, leaving the bodywork floating. It is the same file the hero uses, so
+// by the time a visitor navigates it is already in cache.
 //
 // Timing lives entirely in CSS keyframes (see `page-wipe*` in globals.css), so
 // the whole sequence runs on the compositor and needs no animation library, no
@@ -82,7 +88,18 @@ export default function RouteTransition({ children }: { children: ReactNode }) {
             ))}
           </div>
           <div className="page-wipe-mark">
-            <Logo size="lg" />
+            <span className="page-wipe-car">
+              <Image
+                src="/images/dennis-tt.webp"
+                alt=""
+                width={1100}
+                height={541}
+                sizes="(max-width: 640px) 90vw, 640px"
+              />
+            </span>
+            <span className="page-wipe-word">
+              <Logo size="lg" />
+            </span>
           </div>
         </div>
       )}

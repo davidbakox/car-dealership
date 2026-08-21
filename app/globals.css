@@ -202,6 +202,20 @@ textarea {
     }
   }
 
+  /* Hero car. WebP lifts the studio black a hair off #000, which is enough for
+     the photo's rectangle to show as a faint seam against the page once
+     `screen` is applied. Fading the two edges that face the copy dissolves it —
+     the right and bottom edges need no mask: one sits at the viewport edge, the
+     other behind the search panel. */
+  .hero-car-mask {
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 24%),
+      linear-gradient(to bottom, transparent 0%, #000 16%);
+    mask-image: linear-gradient(to right, transparent 0%, #000 24%),
+      linear-gradient(to bottom, transparent 0%, #000 16%);
+    -webkit-mask-composite: source-in;
+    mask-composite: intersect;
+  }
+
   /* ---------------------------------------------------------------------
      Page switch (components/ui/RouteTransition.tsx): the wordmark takes over
      the screen, a blade of light sweeps across, sparks rise, and it clears.
@@ -234,25 +248,80 @@ textarea {
       visibility: hidden;
     }
   }
-  /* The glowing disc holding the wordmark. */
+  /* The car above the wordmark.
+     This wrapper is deliberately inert — no opacity, transform or filter. Any
+     of those would make it a stacking context, and a stacking context isolates
+     the blend group inside it: the car would then have nothing to `screen`
+     against but this box's own transparency, and its black would stay black. So
+     the entrance animation lives on the two children instead. */
   .page-wipe-mark {
     position: relative;
     display: flex;
-    width: clamp(180px, 30vw, 280px);
-    aspect-ratio: 1;
+    width: min(90vw, 640px);
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    border-radius: 9999px;
-    background: radial-gradient(
-      circle at 50% 42%,
-      rgb(96 118 29 / 0.38),
-      rgb(9 11 6 / 0.92) 72%
-    );
-    box-shadow:
-      0 0 0 1px rgb(126 154 38 / 0.35),
-      0 0 90px -10px rgb(126 154 38 / 0.6);
+    gap: 0.5rem;
+  }
+  /* `screen` turns the shot's pure-black studio background transparent against
+     the overlay, so the bodywork floats with no cut-out and no fringing. The
+     glow sits behind it and shows through that same transparency. */
+  .page-wipe-car {
+    position: relative;
+    display: block;
+    width: 100%;
+    mix-blend-mode: screen;
     opacity: 0;
     animation: wipe-mark 980ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    /* No mask needed. The shipped file is cropped to the bodywork and its
+       backdrop was rolled down to true black at build time, which is what
+       `screen` drops out completely — a masked vignette only ever hid the
+       problem, and clipped the bumper doing it. */
+  }
+  /* Glow behind the bodywork. The radii are explicit and under half the box, so
+     the gradient reaches full transparency before it meets an edge — sized by
+     `farthest-corner` (the default) it would still be tinted where it met the
+     sides, and the blur would smear that cut into a visible rectangle. */
+  .page-wipe-car::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      ellipse 46% 40% at 50% 56%,
+      rgb(126 154 38 / 0.5),
+      transparent 100%
+    );
+    filter: blur(30px);
+  }
+  .page-wipe-car img {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .page-wipe-word {
+    display: block;
+    opacity: 0;
+    text-shadow: 0 0 26px rgb(126 154 38 / 0.55);
+    animation: wipe-word 980ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  @keyframes wipe-word {
+    0% {
+      opacity: 0;
+      transform: scale(1) translateY(14px);
+    }
+    32% {
+      opacity: 1;
+      transform: scale(1.15) translateY(0);
+    }
+    66% {
+      opacity: 1;
+      transform: scale(1.17) translateY(0);
+    }
+    100% {
+      opacity: 0;
+      transform: scale(1.24) translateY(-6px);
+    }
   }
   @keyframes wipe-mark {
     0% {

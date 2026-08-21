@@ -138,25 +138,35 @@ function Hero({
 
   return (
     <section className="relative overflow-hidden border-b border-line">
-      {/* Full-bleed backdrop: the featured car's real photo, heavily darkened
-          so the type + search panel stay readable. Falls back to a gradient. */}
+      {/* Backdrop. The studio shot is lit against pure black — the same value as
+          the page — so `mix-blend-screen` drops its background out entirely and
+          the car floats with no cut-out and no fringing.
+
+          It is placed rather than stretched: the hero is far taller than the
+          16:9 frame, so `object-cover` would blow the car up and bury it behind
+          the search panel. Anchored top-right instead, it fills the one part of
+          the hero the copy and the panel leave empty. */}
       <div className="absolute inset-0">
-        {cover ? (
-          <>
-            <Image
-              src={cover}
-              alt=""
-              fill
-              priority
-              sizes="100vw"
-              className="object-cover opacity-40"
-            />
-            <div className="absolute inset-0 bg-gradient-to-r from-base via-base/85 to-base/40" />
-            <div className="absolute inset-0 bg-gradient-to-t from-base via-transparent to-base/60" />
-          </>
-        ) : (
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,theme(colors.accent.soft),transparent_60%)]" />
-        )}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_72%_32%,rgba(96,118,29,0.22),transparent_62%)]" />
+        {/* On a phone there is no column free of the copy, so the car sits
+            behind the headline at reduced strength — ambient rather than
+            competing. From `sm` up it moves out to its own space at full
+            strength. */}
+        <div className="hero-car-mask absolute -right-[8%] top-0 w-[104%] opacity-50 mix-blend-screen sm:-right-[2%] sm:w-[76%] sm:opacity-100 lg:right-0 lg:w-[60%]">
+          <Image
+            src="/images/hero-denniscars.webp"
+            alt=""
+            width={1600}
+            height={900}
+            priority
+            sizes="(max-width: 640px) 104vw, (max-width: 1024px) 78vw, 62vw"
+            className="h-auto w-full"
+          />
+        </div>
+        {/* Only the left half is dimmed — the right stays clear so the bodywork
+            keeps its highlights. */}
+        <div className="absolute inset-0 bg-gradient-to-r from-base via-base/70 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-base via-transparent to-transparent" />
       </div>
 
       {/* Motes drift over the darkened photo, never over the copy: the field
