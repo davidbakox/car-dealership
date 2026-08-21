@@ -36,17 +36,8 @@ jobs:
         run: npm run check:filters
 
       - name: Build for Cloudflare Pages
-        # NEXT_PUBLIC_* values are inlined into the bundle at build time, so
-        # they must be present here — the Pages runtime variables are not
-        # enough. Server-only secrets (SUPABASE_SERVICE_ROLE_KEY, ADMIN_EMAIL,
-        # R2_*) are read at runtime and stay configured in the Pages project.
-        env:
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
-          NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL }}
-          NEXT_PUBLIC_ADMIN_PATH: ${{ secrets.NEXT_PUBLIC_ADMIN_PATH }}
-          NEXT_PUBLIC_CF_IMAGE_RESIZING: ${{ secrets.NEXT_PUBLIC_CF_IMAGE_RESIZING }}
-          NEXT_PUBLIC_R2_PUBLIC_URL: ${{ secrets.NEXT_PUBLIC_R2_PUBLIC_URL }}
+        # Public build-time values come from the committed .env.production, which
+        # Next.js loads automatically — so CI needs no secrets for them.
         run: npx @cloudflare/next-on-pages@1
 
       - name: Verify the build is not corrupted
