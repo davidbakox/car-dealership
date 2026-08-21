@@ -161,7 +161,7 @@ function Hero({
 
       {/* Motes drift over the darkened photo, never over the copy: the field
           is a sibling of the backdrop, and everything below is `relative`. */}
-      <Particles count={22} seed={3} className="text-accent-hover" />
+      <Particles count={46} seed={3} className="text-accent-hover" intensity={1.25} />
 
       <div className="relative mx-auto max-w-content px-4 pb-10 pt-8 sm:px-6 sm:pt-12">
         <Reveal>
@@ -359,7 +359,7 @@ function CtaBand() {
       <div className="mx-auto max-w-content px-4 py-14 sm:px-6">
         <Reveal>
           <div className="relative isolate flex flex-col items-start gap-6 overflow-hidden rounded-card border border-accent/30 bg-accent-soft p-8 sm:flex-row sm:items-center sm:justify-between sm:p-10">
-            <Particles count={12} seed={11} className="text-accent-hover" />
+            <Particles count={22} seed={11} className="text-accent-hover" intensity={1.2} />
             <p className="relative max-w-md font-display text-xl font-semibold text-ink sm:text-2xl">
               {t("ctaBandText")}
             </p>
@@ -389,7 +389,7 @@ function SellStrip() {
 
   return (
     <section className="relative isolate overflow-hidden border-y border-line bg-surface">
-      <Particles count={14} seed={5} className="text-accent-hover" />
+      <Particles count={30} seed={5} className="text-accent-hover" intensity={1.1} />
       <div className="relative mx-auto max-w-content px-4 py-12 sm:px-6">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <SectionHeading title={t("title")} />

@@ -11,6 +11,7 @@ import SiteFooter from "@/components/public/SiteFooter";
 import TopBar from "@/components/public/TopBar";
 import CookieConsent from "@/components/public/CookieConsent";
 import RecoveryRedirect from "@/components/auth/RecoveryRedirect";
+import PageParticles from "@/components/ui/PageParticles";
 
 export const runtime = "edge";
 
@@ -53,7 +54,9 @@ export default async function LocaleLayout({
       <body className="min-h-screen bg-base text-ink">
         <NextIntlClientProvider messages={messages}>
           <RecoveryRedirect />
-          <div className="flex min-h-screen flex-col">
+          {/* Motes behind everything; the app sits above them at z-10. */}
+          <PageParticles />
+          <div className="relative z-10 flex min-h-screen flex-col">
             <TopBar />
             <SiteHeader />
             <main className="flex-1">{children}</main>

@@ -34,7 +34,7 @@ export default function SiteFooter() {
       <FooterWaves />
 
       <div className="relative isolate bg-surface">
-        <Particles count={14} seed={7} className="text-accent-hover" />
+        <Particles count={28} seed={7} className="text-accent-hover" intensity={1.15} />
 
         <div className="relative mx-auto grid max-w-content gap-8 px-4 py-12 sm:px-6 md:grid-cols-2 lg:grid-cols-4">
           <div>
