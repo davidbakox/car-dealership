@@ -137,7 +137,8 @@
     "specs": "Specificații",
     "description": "Descriere",
     "sendInquiry": "Trimite o cerere",
-    "inquiryHint": "Ai o întrebare despre această mașină? Lasă-ne datele și te contactăm rapid."
+    "inquiryHint": "Ai o întrebare despre această mașină? Lasă-ne datele și te contactăm rapid.",
+    "call": "Sună"
   },
   "auction": {
     "currentOffer": "Cea mai mare ofertă",
@@ -350,5 +351,11 @@
     "bluetooth": "Bluetooth",
     "isofix": "ISOFIX",
     "tow_bar": "Cârlig de remorcare"
+  },
+  "featureGroups": {
+    "safety": "Siguranță",
+    "comfort": "Confort",
+    "multimedia": "Multimedia",
+    "exterior": "Exterior"
   }
 }

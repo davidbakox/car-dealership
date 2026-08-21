@@ -9,9 +9,12 @@ import Image from "next/image";
 export default function Gallery({
   images,
   alt,
+  overlay,
 }: {
   images: string[];
   alt: string;
+  /** Badges drawn over the main image (status, photo count, location). */
+  overlay?: React.ReactNode;
 }) {
   const trackRef = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(0);
@@ -62,6 +65,10 @@ export default function Gallery({
             </div>
           ))}
         </div>
+
+        {overlay && (
+          <div className="pointer-events-none absolute inset-0">{overlay}</div>
+        )}
 
         {images.length > 1 && (
           <>

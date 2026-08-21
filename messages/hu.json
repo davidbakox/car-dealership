@@ -137,7 +137,8 @@
     "specs": "Műszaki adatok",
     "description": "Leírás",
     "sendInquiry": "Érdeklődés küldése",
-    "inquiryHint": "Kérdésed van erről az autóról? Hagyd meg az adataidat, és gyorsan felvesszük veled a kapcsolatot."
+    "inquiryHint": "Kérdésed van erről az autóról? Hagyd meg az adataidat, és gyorsan felvesszük veled a kapcsolatot.",
+    "call": "Hívás"
   },
   "auction": {
     "currentOffer": "Legmagasabb ajánlat",
@@ -350,5 +351,11 @@
     "bluetooth": "Bluetooth",
     "isofix": "ISOFIX",
     "tow_bar": "Vonóhorog"
+  },
+  "featureGroups": {
+    "safety": "Biztonság",
+    "comfort": "Kényelem",
+    "multimedia": "Multimédia",
+    "exterior": "Külső"
   }
 }

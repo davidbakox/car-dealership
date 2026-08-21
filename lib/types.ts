@@ -123,6 +123,38 @@ export const CAR_FEATURES = [
   "tow_bar",
 ] as const;
 
+// Equipment grouped for display on the car detail page. Every key in
+// CAR_FEATURES must appear in exactly one group — the detail page renders these
+// groups in order and skips any group the car has nothing from.
+export const FEATURE_GROUPS = [
+  {
+    key: "safety",
+    icon: "shield",
+    items: ["abs_esp_airbag", "isofix", "parking_sensors", "rear_camera"],
+  },
+  {
+    key: "comfort",
+    icon: "seat",
+    items: [
+      "air_conditioning",
+      "climate_control",
+      "heated_seats",
+      "electric_mirrors",
+      "cruise_control",
+    ],
+  },
+  {
+    key: "multimedia",
+    icon: "cog",
+    items: ["navigation", "bluetooth", "onboard_computer", "steering_controls"],
+  },
+  {
+    key: "exterior",
+    icon: "car",
+    items: ["led_xenon", "alloy_wheels", "tow_bar"],
+  },
+] as const;
+
 export type BodyType = (typeof BODY_TYPES)[number];
 export type Drivetrain = (typeof DRIVETRAINS)[number];
 export type EuroNorm = (typeof EURO_NORMS)[number];
