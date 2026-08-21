@@ -6,8 +6,6 @@ import CarCard from "@/components/public/CarCard";
 import CarFilterSidebar from "@/components/public/CarFilterSidebar";
 import CarSort from "@/components/public/CarSort";
 import Reveal from "@/components/ui/Reveal";
-import TiltCard from "@/components/ui/TiltCard";
-import SplitWords from "@/components/ui/SplitWords";
 import Icon from "@/components/ui/Icon";
 import {
   type CarFilters,
@@ -83,11 +81,9 @@ export default async function CarsPage({
       </nav>
 
       <div className="mb-6">
-        <SplitWords
-          as="h1"
-          text={t("title")}
-          className="font-display text-3xl font-semibold text-ink sm:text-4xl"
-        />
+        <h1 className="font-display text-3xl font-semibold text-ink sm:text-4xl">
+          {t("title")}
+        </h1>
         <p className="mt-1.5 text-ink-muted">
           {t("resultsCount", { count: matched.length })}
         </p>
@@ -134,9 +130,7 @@ export default async function CarsPage({
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
               {cars.map((car, i) => (
                 <Reveal key={car.id} index={i % 3} as="article">
-                  <TiltCard className="rounded-card">
-                    <CarCard car={car} />
-                  </TiltCard>
+                  <CarCard car={car} />
                 </Reveal>
               ))}
             </div>

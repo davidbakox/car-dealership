@@ -59,7 +59,7 @@ export default function SiteFooter() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="link-sweep text-sm text-ink-muted transition-colors hover:text-accent"
+                    className="text-sm text-ink-muted transition-colors hover:text-accent"
                   >
                     {t(`nav.${link.key}`)}
                   </Link>
@@ -77,14 +77,14 @@ export default function SiteFooter() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="link-sweep text-sm text-ink-muted transition-colors hover:text-accent"
+                    className="text-sm text-ink-muted transition-colors hover:text-accent"
                   >
                     {t(`footer.${link.key}`)}
                   </Link>
                 </li>
               ))}
               <li>
-                <CookieSettingsButton className="link-sweep text-left text-sm text-ink-muted transition-colors hover:text-accent">
+                <CookieSettingsButton className="text-left text-sm text-ink-muted transition-colors hover:text-accent">
                   {t("footer.cookieSettings")}
                 </CookieSettingsButton>
               </li>

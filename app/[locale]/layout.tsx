@@ -11,9 +11,6 @@ import SiteFooter from "@/components/public/SiteFooter";
 import TopBar from "@/components/public/TopBar";
 import CookieConsent from "@/components/public/CookieConsent";
 import RecoveryRedirect from "@/components/auth/RecoveryRedirect";
-import AmbientBackground from "@/components/ui/AmbientBackground";
-import ScrollProgress from "@/components/ui/ScrollProgress";
-import CursorGlow from "@/components/ui/CursorGlow";
 
 export const runtime = "edge";
 
@@ -56,12 +53,7 @@ export default async function LocaleLayout({
       <body className="min-h-screen bg-base text-ink">
         <NextIntlClientProvider messages={messages}>
           <RecoveryRedirect />
-          {/* Atmosphere first, then the app on top of it: the ambient layer is
-              fixed at z-0, so every route sits above it via `relative z-10`. */}
-          <AmbientBackground />
-          <ScrollProgress />
-          <CursorGlow />
-          <div className="relative z-10 flex min-h-screen flex-col">
+          <div className="flex min-h-screen flex-col">
             <TopBar />
             <SiteHeader />
             <main className="flex-1">{children}</main>

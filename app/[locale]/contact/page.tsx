@@ -3,7 +3,6 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import ContactForm from "@/components/public/ContactForm";
 import MapEmbed from "@/components/public/MapEmbed";
 import Icon from "@/components/ui/Icon";
-import SplitWords from "@/components/ui/SplitWords";
 import {
   EMAIL,
   EMAIL_HREF,
@@ -60,11 +59,9 @@ export default async function ContactPage({
   return (
     <div className="mx-auto max-w-content px-4 py-10 sm:px-6">
       <div className="mb-8 max-w-2xl">
-        <SplitWords
-          as="h1"
-          text={t("title")}
-          className="font-display text-4xl font-semibold text-ink"
-        />
+        <h1 className="font-display text-4xl font-semibold text-ink">
+          {t("title")}
+        </h1>
         <p className="mt-4 text-lg text-ink-muted">{t("lead")}</p>
       </div>
 
