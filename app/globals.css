@@ -208,10 +208,18 @@ textarea {
      the right and bottom edges need no mask: one sits at the viewport edge, the
      other behind the search panel. */
   .hero-car-mask {
+    /* All four edges are faded, not just the two nearest the copy. The bottom
+       one matters most: on a wide screen the photo ends beside the search panel
+       rather than behind it, and an un-faded cut there is a hard line across the
+       hero. Each direction is its own mask layer, intersected. */
     -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 24%),
-      linear-gradient(to bottom, transparent 0%, #000 16%);
+      linear-gradient(to bottom, transparent 0%, #000 16%),
+      linear-gradient(to top, transparent 0%, #000 15%),
+      linear-gradient(to left, transparent 0%, #000 6%);
     mask-image: linear-gradient(to right, transparent 0%, #000 24%),
-      linear-gradient(to bottom, transparent 0%, #000 16%);
+      linear-gradient(to bottom, transparent 0%, #000 16%),
+      linear-gradient(to top, transparent 0%, #000 15%),
+      linear-gradient(to left, transparent 0%, #000 6%);
     -webkit-mask-composite: source-in;
     mask-composite: intersect;
   }
