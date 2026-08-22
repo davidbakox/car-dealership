@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import Icon from "@/components/ui/Icon";
 import { FUEL_TYPES, TRANSMISSIONS, BODY_TYPES } from "@/lib/types";
@@ -10,8 +10,15 @@ import { YEARS } from "@/lib/car-filters";
 // posting to the localized listings page, so it works with zero JS and lands on
 // shareable filter URLs. `action` is the locale-correct /cars path.
 //
-// The one bit of state is the Model dropdown: it stays disabled until a make is
-// picked, then lists only that make's models (from `modelsByMake`).
+// Only the three fields a buyer actually starts from — make, model, budget —
+// are on show; the rest live behind a disclosure. That keeps the hero short
+// enough for the headline and the car to breathe, and matches how people search
+// for a car: pick a brand and a ceiling first, refine second.
+//
+// The advanced block is hidden with CSS rather than unmounted, so a filter set
+// there still submits after the block is collapsed again. The counter next to
+// the toggle is what makes that honest — a collapsed panel never hides an
+// active filter silently.
 export default function SearchPanel({
   makes,
   modelsByMake,
@@ -29,6 +36,21 @@ export default function SearchPanel({
 
   const [make, setMake] = useState("");
   const models = make ? modelsByMake[make] ?? [] : [];
+
+  const [open, setOpen] = useState(false);
+  const [advCount, setAdvCount] = useState(0);
+  const advRef = useRef<HTMLDivElement>(null);
+
+  // `change` bubbles from the selects and inputs, so one handler on the wrapper
+  // keeps the badge in step with whatever is set inside it.
+  const recount = () => {
+    const el = advRef.current;
+    if (!el) return;
+    const fields = el.querySelectorAll<HTMLInputElement | HTMLSelectElement>(
+      "select, input"
+    );
+    setAdvCount(Array.from(fields).filter((f) => f.value !== "").length);
+  };
 
   const label =
     "mb-1.5 block text-[11px] font-medium uppercase tracking-wider text-ink-faint";
@@ -48,7 +70,8 @@ export default function SearchPanel({
         {th("searchTitle")}
       </div>
 
-      <div className="grid grid-cols-1 gap-x-5 gap-y-4 sm:grid-cols-2">
+      {/* Where every search starts: brand, model, budget. */}
+      <div className="grid grid-cols-1 gap-x-5 gap-y-4 sm:grid-cols-2 lg:grid-cols-3">
         <label className="block">
           <span className={label}>{t("make")}</span>
           <select
@@ -80,6 +103,45 @@ export default function SearchPanel({
           </select>
         </label>
 
+        <label className="block">
+          <span className={label}>{t("priceMaxLabel")}</span>
+          <input
+            name="maxPrice"
+            type="number"
+            min={0}
+            step={100}
+            inputMode="numeric"
+            placeholder={t("priceMaxPh")}
+            className={field}
+          />
+        </label>
+      </div>
+
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+        aria-controls="hero-more-filters"
+        className="mt-4 inline-flex items-center gap-2 rounded-lg px-1 py-1 text-sm font-medium text-ink-muted transition-colors hover:text-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/60"
+      >
+        <Icon name="sliders" size={16} />
+        {t("advancedFilters")}
+        {advCount > 0 && (
+          <span className="rounded bg-accent px-1.5 py-0.5 text-[11px] font-semibold text-white">
+            {advCount}
+          </span>
+        )}
+        <span className={`transition-transform duration-200 ${open ? "rotate-180" : ""}`}>
+          <Icon name="chevron-down" size={16} />
+        </span>
+      </button>
+
+      <div
+        id="hero-more-filters"
+        ref={advRef}
+        onChange={recount}
+        className={`${open ? "grid" : "hidden"} grid-cols-1 gap-x-5 gap-y-4 border-t border-line pt-4 sm:grid-cols-2 lg:grid-cols-3`}
+      >
         <label className="block">
           <span className={label}>{t("bodyType")}</span>
           <select name="body" defaultValue="" className={`${field} select-field`}>
@@ -118,19 +180,6 @@ export default function SearchPanel({
               <option key={y} value={y}>{y}</option>
             ))}
           </select>
-        </label>
-
-        <label className="block">
-          <span className={label}>{t("priceMaxLabel")}</span>
-          <input
-            name="maxPrice"
-            type="number"
-            min={0}
-            step={100}
-            inputMode="numeric"
-            placeholder={t("priceMaxPh")}
-            className={field}
-          />
         </label>
 
         <label className="block">
