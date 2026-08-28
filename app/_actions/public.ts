@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { revalidatePath } from "next/cache";
 import { ADMIN_PATH } from "@/lib/env";
 import {
@@ -22,6 +23,10 @@ import type { PublicFormState } from "@/lib/form-state";
 // bidding across concurrent users would need Supabase Realtime + server-side
 // bid validation — a separate phase, intentionally not built here.
 
+function logWriteFailure(form: string, message: string) {
+  console.error(`[public form] ${form} insert failed: ${message}`);
+}
+
 export async function submitInquiryAction(
   _prev: PublicFormState,
   formData: FormData
@@ -35,7 +40,10 @@ export async function submitInquiryAction(
   });
   if (!parsed.success) return { fieldErrors: fieldErrors(parsed.error) };
 
-  const supabase = createClient();
+  // Service role: the anon INSERT policy on `offers` rejects any row that
+  // references a car, so this submission never reached the table. See
+  // lib/supabase/admin.ts — the payload below is fully validated and fixed.
+  const supabase = createAdminClient();
   const { error } = await supabase.from("offers").insert({
     car_id: parsed.data.car_id,
     buyer_name: parsed.data.buyer_name,
@@ -44,7 +52,10 @@ export async function submitInquiryAction(
     message: parsed.data.message,
     amount: null,
   });
-  if (error) return { error: "generic" };
+  if (error) {
+    logWriteFailure("inquiry", error.message);
+    return { error: "generic" };
+  }
 
   // Car inquiries share the inbox with contact-form messages.
   revalidatePath(ADMIN_PATH);
@@ -121,7 +132,7 @@ export async function submitSellRequestAction(
     `${SELL_REQUEST_MARKER} ${d.car_make} ${d.car_model}, ${d.car_year}, ${d.car_mileage} km` +
     (d.message ? ` — ${d.message}` : "");
 
-  const supabase = createClient();
+  const supabase = createAdminClient();
   const { error } = await supabase.from("offers").insert({
     buyer_name: d.seller_name,
     buyer_phone: d.seller_phone,
@@ -129,7 +140,10 @@ export async function submitSellRequestAction(
     amount: null,
     message: composed,
   });
-  if (error) return { error: "generic" };
+  if (error) {
+    logWriteFailure("sellrequest", error.message);
+    return { error: "generic" };
+  }
 
   revalidatePath(`${ADMIN_PATH}/sell-requests`);
   return { ok: true };
@@ -148,7 +162,7 @@ export async function submitContactAction(
   });
   if (!parsed.success) return { fieldErrors: fieldErrors(parsed.error) };
 
-  const supabase = createClient();
+  const supabase = createAdminClient();
   const { error } = await supabase.from("offers").insert({
     buyer_name: parsed.data.name,
     buyer_email: CONTACT_MESSAGE_MARKER,
@@ -156,7 +170,10 @@ export async function submitContactAction(
     amount: null,
     message: parsed.data.message,
   });
-  if (error) return { error: "generic" };
+  if (error) {
+    logWriteFailure("contact", error.message);
+    return { error: "generic" };
+  }
 
   revalidatePath(ADMIN_PATH);
   revalidatePath(`${ADMIN_PATH}/messages`);

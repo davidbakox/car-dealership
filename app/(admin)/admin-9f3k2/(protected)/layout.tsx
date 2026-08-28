@@ -12,6 +12,9 @@ const navItems = [
   { href: "/cars", label: t.admin_cars },
   { href: "/sell-requests", label: t.admin_sell_requests },
   { href: "/messages", label: t.admin_messages },
+  // Every lead in one table with a CSV export. The page existed but was
+  // unreachable — nothing linked to it.
+  { href: "/offers", label: t.admin_offers },
 ];
 
 // Guarded admin shell. requireAdmin() verifies the session server-side BEFORE
