@@ -67,29 +67,34 @@ export default async function ContactPage({
 
       <div className="grid gap-8 lg:grid-cols-2">
         <div className="space-y-6">
-          <div className="space-y-4">
-            {info.map((row) => (
-              <div key={row.label} className="flex items-start gap-4">
-                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded bg-accent-soft text-accent">
-                  <Icon name={row.icon} size={20} />
-                </span>
-                <div>
-                  <div className="text-xs uppercase tracking-wide text-ink-faint">
-                    {row.label}
-                  </div>
-                  {row.href ? (
-                    <a
-                      href={row.href}
-                      className="font-medium text-ink transition-colors hover:text-accent"
-                    >
+          <div className="grid gap-3 sm:grid-cols-2">
+            {info.map((row) => {
+              const body = (
+                <>
+                  <span className="tile-icon h-11 w-11">
+                    <Icon name={row.icon} size={20} />
+                  </span>
+                  <span className="min-w-0">
+                    <span className="block text-[10px] font-medium uppercase tracking-[0.18em] text-ink-faint">
+                      {row.label}
+                    </span>
+                    <span className="mt-1 block break-words font-medium leading-snug text-ink">
                       {row.value}
-                    </a>
-                  ) : (
-                    <div className="font-medium text-ink">{row.value}</div>
-                  )}
+                    </span>
+                  </span>
+                </>
+              );
+              const shell = "tile-card group flex h-full items-start gap-4 p-5";
+              return row.href ? (
+                <a key={row.label} href={row.href} className={shell}>
+                  {body}
+                </a>
+              ) : (
+                <div key={row.label} className={shell}>
+                  {body}
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
           <div className="card p-6">

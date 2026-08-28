@@ -95,8 +95,8 @@ export default async function AboutPage({
             </Reveal>
             {facts.map((fact, index) => (
               <Reveal key={fact.label} index={index}>
-                <div className="card flex h-full items-center gap-4 p-5 lg:p-6">
-                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded bg-accent-soft text-accent-hover">
+                <div className="tile-card group flex h-full items-center gap-4 p-5 lg:p-6">
+                  <span className="tile-icon h-11 w-11">
                     <Icon name={fact.icon} size={21} />
                   </span>
                   <div>
