@@ -3,11 +3,15 @@ import { requireAdmin } from "@/lib/auth";
 import { t } from "@/lib/i18n/config";
 import { ADMIN_PATH } from "@/lib/env";
 import { formatDateTime } from "@/lib/format";
-import type { ContactMessage, Offer } from "@/lib/types";
+import type { Offer } from "@/lib/types";
+import { SELL_REQUEST_MARKER } from "@/lib/contact";
 import {
-  CONTACT_MESSAGE_MARKER,
-  SELL_REQUEST_MARKER,
-} from "@/lib/contact";
+  INBOX_SELECT,
+  LEGACY_SELL_REQUEST_MARKER,
+  isInboxRow,
+  toInboxMessage,
+  type InboxRow,
+} from "@/lib/inbox";
 
 export const runtime = "edge";
 export const dynamic = "force-dynamic";
@@ -43,14 +47,14 @@ export default async function DashboardPage() {
       .from("offers")
       .select("id", { count: "exact", head: true })
       .gte("created_at", weekAgo),
+    // Over-fetch: sell requests share this table and are filtered out below,
+    // so a run of them cannot squeeze the real messages out of the preview.
     supabase
       .from("offers")
-      .select("id, buyer_name, buyer_phone, buyer_email, message, created_at")
-      .or(
-        `buyer_phone.eq.${CONTACT_MESSAGE_MARKER},buyer_email.eq.${CONTACT_MESSAGE_MARKER}`
-      )
+      .select(INBOX_SELECT)
+      .is("auction_id", null)
       .order("created_at", { ascending: false })
-      .limit(5),
+      .limit(25),
     supabase
       .from("offers")
       .select("id, buyer_name, buyer_phone, message, created_at")
@@ -60,21 +64,15 @@ export default async function DashboardPage() {
     supabase
       .from("offers")
       .select("id, buyer_name, buyer_phone, message, created_at")
-      .like("message", "[VÂNZARE]%")
+      .like("message", `${LEGACY_SELL_REQUEST_MARKER}%`)
       .order("created_at", { ascending: false })
       .limit(5),
   ]);
 
-  const messages: ContactMessage[] = (recent.data ?? []).map((message) => ({
-    id: message.id,
-    name: message.buyer_name,
-    phone:
-      message.buyer_phone === CONTACT_MESSAGE_MARKER
-        ? "—"
-        : message.buyer_phone,
-    message: message.message,
-    created_at: message.created_at,
-  }));
+  const messages = ((recent.data ?? []) as unknown as InboxRow[])
+    .filter(isInboxRow)
+    .slice(0, 5)
+    .map(toInboxMessage);
 
   const sellRequests = [
     ...(recentSellRequests.data ?? []),
@@ -128,6 +126,11 @@ export default async function DashboardPage() {
                     <span className="truncate text-xs text-slate-500">
                       {message.phone}
                     </span>
+                    {message.car && (
+                      <span className="truncate rounded-full bg-brand/10 px-2 py-0.5 text-xs font-medium text-brand">
+                        {message.car.title}
+                      </span>
+                    )}
                   </div>
                   <p className="mt-1 truncate text-sm text-slate-600 group-hover:text-slate-900">
                     {message.message}
@@ -177,7 +180,7 @@ export default async function DashboardPage() {
                   <p className="mt-1 truncate text-sm text-slate-600 group-hover:text-slate-900">
                     {request.message
                       .replace(SELL_REQUEST_MARKER, "")
-                      .replace("[VÂNZARE]", "")
+                      .replace(LEGACY_SELL_REQUEST_MARKER, "")
                       .trim()}
                   </p>
                 </div>

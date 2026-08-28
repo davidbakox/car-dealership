@@ -35,6 +35,9 @@ jobs:
       - name: Check filter logic
         run: npm run check:filters
 
+      - name: Check admin inbox rules
+        run: npm run check:inbox
+
       - name: Build for Cloudflare Pages
         # Public build-time values come from the committed .env.production, which
         # Next.js loads automatically — so CI needs no secrets for them.

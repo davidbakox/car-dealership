@@ -1,34 +1,34 @@
+import Link from "next/link";
 import { requireAdmin } from "@/lib/auth";
 import { t } from "@/lib/i18n/config";
+import { ADMIN_PATH } from "@/lib/env";
 import { formatDateTime } from "@/lib/format";
-import type { ContactMessage } from "@/lib/types";
-import { CONTACT_MESSAGE_MARKER } from "@/lib/contact";
+import {
+  INBOX_SELECT,
+  isInboxRow,
+  toInboxMessage,
+  type InboxRow,
+} from "@/lib/inbox";
 import Icon from "@/components/ui/Icon";
 import { deleteContactMessageAction } from "../actions";
 
 export const runtime = "edge";
 export const dynamic = "force-dynamic";
 
-// Admin inbox for Contact-page submissions stored in the shared leads table.
+// The single inbox: Contact-page submissions AND questions asked from a car's
+// page, which previously landed in the table with nowhere in the panel to read
+// them. Sell requests and auction offers keep their own screens.
 export default async function AdminMessagesPage() {
   const { supabase } = await requireAdmin();
   const { data } = await supabase
     .from("offers")
-    .select("id, buyer_name, buyer_phone, buyer_email, message, created_at")
-    .or(
-      `buyer_phone.eq.${CONTACT_MESSAGE_MARKER},buyer_email.eq.${CONTACT_MESSAGE_MARKER}`
-    )
+    .select(INBOX_SELECT)
+    .is("auction_id", null)
     .order("created_at", { ascending: false });
-  const messages: ContactMessage[] = (data ?? []).map((message) => ({
-    id: message.id,
-    name: message.buyer_name,
-    phone:
-      message.buyer_phone === CONTACT_MESSAGE_MARKER
-        ? "—"
-        : message.buyer_phone,
-    message: message.message,
-    created_at: message.created_at,
-  }));
+
+  const messages = ((data ?? []) as unknown as InboxRow[])
+    .filter(isInboxRow)
+    .map(toInboxMessage);
 
   return (
     <div className="space-y-6">
@@ -41,6 +41,8 @@ export default async function AdminMessagesPage() {
               <th className="p-3">{t.col_date}</th>
               <th className="p-3">{t.col_name}</th>
               <th className="p-3">{t.col_phone}</th>
+              <th className="p-3">{t.col_email}</th>
+              <th className="p-3">{t.col_subject}</th>
               <th className="p-3">{t.col_message}</th>
               <th className="w-16 p-3" aria-label={t.admin_delete} />
             </tr>
@@ -52,7 +54,26 @@ export default async function AdminMessagesPage() {
                   {formatDateTime(m.created_at)}
                 </td>
                 <td className="p-3 font-medium">{m.name}</td>
-                <td className="p-3">{m.phone}</td>
+                <td className="whitespace-nowrap p-3">{m.phone}</td>
+                <td className="p-3">{m.email}</td>
+                <td className="p-3">
+                  {m.car ? (
+                    <Link
+                      href={`${ADMIN_PATH}/cars/${m.car.id}/edit`}
+                      className="inline-flex items-center gap-1.5 rounded-full bg-brand/10 px-2.5 py-1 text-xs font-medium text-brand hover:bg-brand/15"
+                    >
+                      <Icon name="car" size={14} />
+                      {m.car.title}
+                    </Link>
+                  ) : (
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-600">
+                      <Icon name="mail" size={14} />
+                      {m.source === "contact"
+                        ? t.msg_from_contact_form
+                        : t.msg_from_car_inquiry}
+                    </span>
+                  )}
+                </td>
                 <td className="max-w-md p-3 text-slate-600">{m.message}</td>
                 <td className="p-3 text-right">
                   <form action={deleteContactMessageAction}>
@@ -71,7 +92,7 @@ export default async function AdminMessagesPage() {
             ))}
             {messages.length === 0 && (
               <tr>
-                <td colSpan={5} className="p-6 text-center text-slate-500">
+                <td colSpan={7} className="p-6 text-center text-slate-500">
                   {t.admin_no_messages}
                 </td>
               </tr>

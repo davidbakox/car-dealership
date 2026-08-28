@@ -1,7 +1,10 @@
 import { requireAdmin } from "@/lib/auth";
 import { t } from "@/lib/i18n/config";
 import { formatDateTime } from "@/lib/format";
-import { SELL_REQUEST_MARKER } from "@/lib/contact";
+import {
+  isSellRequestMessage,
+  stripSellRequestMarker,
+} from "@/lib/inbox";
 import type { Offer } from "@/lib/types";
 import Icon from "@/components/ui/Icon";
 import { deleteSellRequestAction } from "../actions";
@@ -9,24 +12,10 @@ import { deleteSellRequestAction } from "../actions";
 export const runtime = "edge";
 export const dynamic = "force-dynamic";
 
-const LEGACY_SELL_MARKER = "[VÂNZARE]";
-
-function isSellRequest(offer: Offer): boolean {
-  return (
-    offer.message.startsWith(SELL_REQUEST_MARKER) ||
-    offer.message.startsWith(LEGACY_SELL_MARKER)
-  );
-}
-
-function requestDetails(message: string): string {
-  if (message.startsWith(SELL_REQUEST_MARKER)) {
-    return message.slice(SELL_REQUEST_MARKER.length).trim();
-  }
-  if (message.startsWith(LEGACY_SELL_MARKER)) {
-    return message.slice(LEGACY_SELL_MARKER.length).trim();
-  }
-  return message;
-}
+// Both markers, and the stripping of them, live in lib/inbox so this page and
+// the inbox can never disagree about which rows are sell requests.
+const isSellRequest = (offer: Offer) => isSellRequestMessage(offer.message);
+const requestDetails = stripSellRequestMarker;
 
 export default async function AdminSellRequestsPage() {
   const { supabase } = await requireAdmin();

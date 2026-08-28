@@ -45,6 +45,10 @@ export async function submitInquiryAction(
     amount: null,
   });
   if (error) return { error: "generic" };
+
+  // Car inquiries share the inbox with contact-form messages.
+  revalidatePath(ADMIN_PATH);
+  revalidatePath(`${ADMIN_PATH}/messages`);
   return { ok: true };
 }
 

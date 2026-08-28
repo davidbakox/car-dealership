@@ -13,7 +13,8 @@
     "preview": "npm run pages:build && wrangler pages dev .vercel/output/static",
     "deploy": "npm run pages:build && wrangler pages deploy .vercel/output/static",
     "check:filters": "tsx scripts/check-filters.ts",
-    "verify:build": "node scripts/verify-build.mjs"
+    "verify:build": "node scripts/verify-build.mjs",
+    "check:inbox": "tsx scripts/check-inbox.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1079.0",

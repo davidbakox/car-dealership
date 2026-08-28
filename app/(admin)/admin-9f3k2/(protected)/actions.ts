@@ -7,9 +7,10 @@ import { carSchema, auctionSchema, fieldErrors } from "@/lib/validation/schemas"
 import { ADMIN_PATH } from "@/lib/env";
 import type { ActionState } from "@/lib/form-state";
 import {
-  CONTACT_MESSAGE_MARKER,
-  SELL_REQUEST_MARKER,
-} from "@/lib/contact";
+  isInboxRow,
+  isSellRequestMessage,
+  type InboxRow,
+} from "@/lib/inbox";
 import { deleteR2Images } from "@/lib/r2";
 import { CARS_CACHE_TAG } from "@/lib/cache-tags";
 
@@ -197,14 +198,17 @@ export async function deleteContactMessageAction(
   const id = String(formData.get("id") ?? "");
   if (!/^[0-9a-f-]{36}$/i.test(id)) return;
 
-  // The marker guard prevents this action from deleting ordinary leads.
-  await supabase
+  // Read the row first so the same rule that puts a message in the inbox
+  // decides whether it may be deleted from there — a sell request or an
+  // auction offer must not disappear through this action.
+  const { data: row } = await supabase
     .from("offers")
-    .delete()
+    .select("id, message, auction_id")
     .eq("id", id)
-    .or(
-      `buyer_phone.eq.${CONTACT_MESSAGE_MARKER},buyer_email.eq.${CONTACT_MESSAGE_MARKER}`
-    );
+    .maybeSingle();
+  if (!row || !isInboxRow(row as InboxRow)) return;
+
+  await supabase.from("offers").delete().eq("id", id);
 
   revalidatePath(ADMIN_PATH);
   revalidatePath(`${ADMIN_PATH}/messages`);
@@ -223,10 +227,7 @@ export async function deleteSellRequestAction(
     .eq("id", id)
     .single();
 
-  const isSellRequest =
-    data?.message?.startsWith(SELL_REQUEST_MARKER) ||
-    data?.message?.startsWith("[VÂNZARE]");
-  if (!isSellRequest) return;
+  if (!isSellRequestMessage(data?.message ?? null)) return;
 
   await supabase.from("offers").delete().eq("id", id);
   revalidatePath(ADMIN_PATH);
