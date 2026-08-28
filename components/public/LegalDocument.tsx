@@ -91,6 +91,12 @@ export default function LegalDocument({
               </div>
             )}
 
+            {section.footnotes?.map((note) => (
+              <p key={note} className="mt-4 text-sm leading-7 text-ink-faint">
+                {note}
+              </p>
+            ))}
+
             {section.links && (
               <div className="mt-5 flex flex-wrap gap-3">
                 {section.links.map((link) => (

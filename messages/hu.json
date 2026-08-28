@@ -12,7 +12,16 @@
     "contact": "Kapcsolat",
     "menu": "Menü",
     "close": "Bezárás",
-    "language": "Nyelv"
+    "language": "Nyelv",
+    "menuLead": "Navigáció",
+    "quickContact": "Gyors kapcsolat",
+    "desc": {
+      "home": "Újdonságok és ajánlott autók",
+      "cars": "A teljes készlet, szűrőkkel",
+      "sell": "Konszignáció, csere és buy-back",
+      "about": "Kik vagyunk és hogyan dolgozunk",
+      "contact": "Nyitvatartás, térkép és űrlap"
+    }
   },
   "common": {
     "loading": "Betöltés…",
@@ -275,7 +284,8 @@
     "close": "Bezárás",
     "mapBlocked": "A térkép blokkolva van",
     "mapBlockedText": "A Google Maps csak a külső tartalom engedélyezése után töltődik be.",
-    "openSettings": "Beállítások megnyitása"
+    "openSettings": "Beállítások megnyitása",
+    "retention": "A választásodat 6 hónapig őrizzük meg, utána újra megkérdezünk."
   },
   "privacyNotice": {
     "prefix": "Az űrlap elküldésével az adataidat a kérés megválaszolásához használjuk, az",

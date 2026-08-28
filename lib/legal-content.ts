@@ -8,6 +8,7 @@ import {
   PRIMARY_CONTACT_NAME,
   REGISTERED_OFFICE,
   SECONDARY_CONTACT_NAME,
+  SHARE_CAPITAL,
   SECONDARY_PHONE,
   TRADE_REGISTER_NUMBER,
 } from "@/lib/contact";
@@ -21,6 +22,8 @@ export type LegalSection = {
   title: string;
   paragraphs?: string[];
   bullets?: string[];
+  // Trailing notes that must read AFTER a list rather than before it.
+  footnotes?: string[];
   links?: LegalLink[];
   table?: {
     headers: string[];
@@ -59,7 +62,7 @@ const ro: Record<DocumentKey, LegalDocumentContent> = {
       "Datele operatorului Dennis Cars Carei, condițiile de utilizare a site-ului și informații pentru consumatori.",
     lead:
       "Această pagină explică cine administrează site-ul, ce rol au anunțurile auto și ce drepturi au consumatorii.",
-    updated: "Ultima actualizare: 2 august 2026",
+    updated: "Ultima actualizare: 28 august 2026",
     sections: [
       {
         title: "1. Identificarea operatorului",
@@ -69,6 +72,9 @@ const ro: Record<DocumentKey, LegalDocumentContent> = {
           `CUI/CIF: ${CUI}`,
           `Nr. Registrul Comerțului: ${TRADE_REGISTER_NUMBER}`,
           `EUID: ${EUID}`,
+          ...(SHARE_CAPITAL
+            ? [`Capital social subscris și vărsat: ${SHARE_CAPITAL}`]
+            : []),
           `Data înființării: ${INCORPORATION_DATE}`,
           `Sediu social: ${REGISTERED_OFFICE}`,
           "Punct de lucru: Str. Mihai Viteazu nr. 57, Carei, jud. Satu Mare, România",
@@ -155,7 +161,7 @@ const ro: Record<DocumentKey, LegalDocumentContent> = {
       "Cum colectează, folosește, păstrează și protejează Dennis Cars Carei datele cu caracter personal.",
     lead:
       "Politica descrie prelucrarea datelor trimise prin formularele site-ului și datele tehnice necesare funcționării sale.",
-    updated: "Ultima actualizare: 2 august 2026",
+    updated: "Ultima actualizare: 28 august 2026",
     sections: [
       {
         title: "1. Operatorul datelor",
@@ -168,6 +174,9 @@ const ro: Record<DocumentKey, LegalDocumentContent> = {
           `Telefon – ${SECONDARY_CONTACT_NAME}: ${SECONDARY_PHONE}`,
           `E-mail pentru protecția datelor: ${EMAIL}`,
         ],
+        footnotes: [
+          "Operatorul nu are obligația de a desemna un responsabil cu protecția datelor (DPO) în sensul art. 37 GDPR și nu a desemnat unul. Orice cerere privind datele personale se transmite la datele de contact de mai sus și este tratată de conducerea societății.",
+        ],
       },
       {
         title: "2. Datele pe care le prelucrăm",
@@ -177,6 +186,10 @@ const ro: Record<DocumentKey, LegalDocumentContent> = {
           "Cerere de consignație: nume, telefon, e-mail, marca, modelul, anul, kilometrajul și detaliile transmise despre autoturism.",
           "Date tehnice: adresă IP, data și ora accesului, tipul dispozitivului/browserului, paginile solicitate și jurnale de securitate, în măsura în care sunt generate de furnizorii de hosting.",
           "Preferințe: limba selectată și alegerea privind conținutul extern.",
+        ],
+        footnotes: [
+          "Completarea formularelor este voluntară, iar site-ul nu solicită date care nu sunt necesare. Câmpurile marcate ca obligatorii – de regulă numele și un mijloc de contact – trebuie totuși completate pentru a putea răspunde: fără ele solicitarea nu poate fi înregistrată sau soluționată. Câmpurile opționale pot rămâne necompletate, fără nicio consecință.",
+          "La încheierea unui contract de vânzare, a unui contract de consignație sau la emiterea unui certificat de garanție, furnizarea datelor de identificare devine o cerință contractuală și legală (obligații fiscale și contabile). În lipsa acestora contractul nu poate fi încheiat sau executat.",
         ],
       },
       {
@@ -192,14 +205,16 @@ const ro: Record<DocumentKey, LegalDocumentContent> = {
         title: "4. Destinatari și furnizori",
         paragraphs: [
           "Accesul este limitat la persoanele care gestionează solicitările și administrarea site-ului. Datele pot fi prelucrate de furnizori IT contractați, inclusiv servicii de hosting, bază de date, stocare, securitate și mentenanță.",
-          "Arhitectura actuală folosește Supabase pentru baza de date și autentificare administrativă și Cloudflare pentru infrastructură/stocare. Google primește date direct de la browser numai dacă utilizatorul permite conținutul extern și harta este încărcată.",
+          "Furnizorii utilizați în prezent sunt: Supabase (baza de date în care se salvează mesajele din formulare și autentificarea contului de administrare), Cloudflare (găzduirea site-ului, rețeaua de livrare și stocarea fotografiilor auto în Cloudflare R2) și Google Ireland Limited (exclusiv harta încorporată). Fotografiile mașinilor sunt livrate din infrastructura Cloudflare a operatorului, fără cookie-uri, ca parte necesară a funcționării site-ului.",
+          "Google primește date direct de la browser numai dacă utilizatorul permite conținutul extern și harta este efectiv încărcată. Formularele, catalogul și restul site-ului funcționează fără nicio legătură cu Google.",
           "Datele pot fi comunicate autorităților, consultanților sau instanțelor atunci când există o obligație legală ori este necesar pentru apărarea unui drept.",
         ],
       },
       {
         title: "5. Transferuri internaționale",
         paragraphs: [
-          "Unii furnizori pot procesa date și în afara Spațiului Economic European. În astfel de cazuri trebuie utilizate mecanisme recunoscute de GDPR, precum decizii de adecvare sau clauze contractuale standard, împreună cu măsuri suplimentare atunci când sunt necesare.",
+          "Unii furnizori (în special Cloudflare, Supabase și Google) fac parte din grupuri cu sediul în Statele Unite și pot procesa date și în afara Spațiului Economic European. Transferurile se realizează pe baza mecanismelor recunoscute de GDPR – clauzele contractuale standard ale Comisiei Europene (art. 46 alin. (2) GDPR) și, acolo unde este aplicabilă, decizia de adecvare privind Cadrul UE-SUA pentru confidențialitatea datelor (art. 45 GDPR) – completate cu măsuri suplimentare atunci când sunt necesare.",
+          "O copie a garanțiilor aplicabile poate fi solicitată la adresa de e-mail indicată la punctul 1.",
         ],
       },
       {
@@ -208,7 +223,7 @@ const ro: Record<DocumentKey, LegalDocumentContent> = {
           "Solicitări fără contract: pe durata soluționării și cel mult 24 de luni de la ultima interacțiune, dacă nu există un litigiu sau o obligație legală de păstrare.",
           "Documente contractuale, contabile și de garanție: pe durata contractului și ulterior conform termenelor legale aplicabile.",
           "Jurnale tehnice și de securitate: numai pentru perioada necesară securității și diagnosticării, conform configurației furnizorilor.",
-          "Preferința de consimțământ: până la ștergerea ei de către utilizator sau schimbarea versiunii politicii.",
+          "Preferința privind cookie-urile: maximum 6 luni de la ultima alegere, după care consimțământul este solicitat din nou; poate fi ștearsă oricând din browser sau modificată din butonul „Setări cookies”.",
         ],
       },
       {
@@ -220,6 +235,10 @@ const ro: Record<DocumentKey, LegalDocumentContent> = {
           "dreptul de opoziție față de prelucrările bazate pe interes legitim;",
           "dreptul de a retrage consimțământul în orice moment, fără a afecta prelucrarea anterioară;",
           "dreptul de a depune o plângere la ANSPDCP sau de a se adresa instanței.",
+        ],
+        footnotes: [
+          "Cererile se transmit la datele de contact de la punctul 1. Răspunsul se comunică fără întârzieri nejustificate și cel târziu în termen de o lună de la primire, termen care poate fi prelungit cu maximum două luni pentru cereri complexe, conform art. 12 GDPR. Exercitarea drepturilor este gratuită; pentru cereri vădit nefondate sau excesive se poate percepe o taxă rezonabilă ori se poate refuza soluționarea.",
+          "Autoritatea de supraveghere competentă: Autoritatea Națională de Supraveghere a Prelucrării Datelor cu Caracter Personal (ANSPDCP), B-dul G-ral. Gheorghe Magheru nr. 28-30, sector 1, 010336 București, telefon +40 318 059 211, e-mail anspdcp@dataprotection.ro.",
         ],
         links: [
           {
@@ -249,7 +268,7 @@ const ro: Record<DocumentKey, LegalDocumentContent> = {
       "Cookie-urile și tehnologiile similare folosite de site-ul Dennis Cars Carei și modul de schimbare a preferințelor.",
     lead:
       "Site-ul folosește doar tehnologii necesare funcționării și, cu acordul utilizatorului, conținut extern Google Maps.",
-    updated: "Ultima actualizare: 2 august 2026",
+    updated: "Ultima actualizare: 28 august 2026",
     settingsAction: "Deschide setările cookies",
     sections: [
       {
@@ -273,7 +292,7 @@ const ro: Record<DocumentKey, LegalDocumentContent> = {
               "dennis-cars-cookie-consent-v1 (local storage)",
               "Dennis Cars Carei",
               "Memorează dacă a fost permis conținutul extern. Necesar pentru respectarea alegerii.",
-              "Până la ștergere sau schimbarea versiunii politicii",
+              "6 luni de la ultima alegere; apoi consimțământul este cerut din nou",
             ],
             [
               "Cookie-uri și identificatori Google Maps, de exemplu NID, _Secure-ENID sau SOCS",
@@ -283,6 +302,10 @@ const ro: Record<DocumentKey, LegalDocumentContent> = {
             ],
           ],
         },
+        footnotes: [
+          "Înainte de consimțământ site-ul nu setează niciun alt cookie și nu trimite cereri către servere terțe: fonturile sunt găzduite local, iar fotografiile mașinilor sunt livrate din infrastructura Cloudflare a operatorului, fără cookie-uri și fără identificatori de urmărire.",
+          "Cookie-urile de sesiune ale zonei de administrare (Supabase Auth) se setează numai la autentificarea administratorului și nu apar niciodată la vizitatorii site-ului public.",
+        ],
       },
       {
         title: "3. Conținut extern Google Maps",
@@ -305,7 +328,8 @@ const ro: Record<DocumentKey, LegalDocumentContent> = {
         title: "4. Alegerea și retragerea consimțământului",
         paragraphs: [
           "La prima vizită poți accepta toate tehnologiile opționale, le poți refuza sau poți deschide setările. Refuzul nu afectează catalogul, formularele sau datele de contact; doar harta încorporată rămâne blocată.",
-          "Alegerea poate fi schimbată în orice moment prin butonul „Setări cookies” din subsol. Ștergerea datelor site-ului din browser elimină și preferința salvată, iar bannerul va fi afișat din nou.",
+          "Alegerea poate fi schimbată în orice moment prin butonul „Setări cookies” din subsol, iar retragerea consimțământului este la fel de simplă ca acordarea lui. Ștergerea datelor site-ului din browser elimină și preferința salvată, iar bannerul va fi afișat din nou.",
+          "Consimțământul nu este permanent: alegerea este memorată maximum 6 luni, după care bannerul reapare pentru reconfirmare. Până la o nouă alegere, tehnologiile opționale rămân dezactivate.",
         ],
       },
       {
@@ -338,7 +362,7 @@ const hu: Record<DocumentKey, LegalDocumentContent> = {
       "A Dennis Cars Carei üzemeltetői adatai, a weboldal használati feltételei és fogyasztói tájékoztatás.",
     lead:
       "Ez az oldal bemutatja a weboldal üzemeltetőjét, az autóhirdetések szerepét és a fogyasztók legfontosabb jogait.",
-    updated: "Utolsó frissítés: 2026. augusztus 2.",
+    updated: "Utolsó frissítés: 2026. augusztus 28.",
     sections: [
       {
         title: "1. Az üzemeltető azonosító adatai",
@@ -348,6 +372,9 @@ const hu: Record<DocumentKey, LegalDocumentContent> = {
           `Adószám (CUI/CIF): ${CUI}`,
           `Cégjegyzékszám: ${TRADE_REGISTER_NUMBER}`,
           `EUID: ${EUID}`,
+          ...(SHARE_CAPITAL
+            ? [`Jegyzett és befizetett tőke: ${SHARE_CAPITAL}`]
+            : []),
           `Alapítás dátuma: ${INCORPORATION_DATE}`,
           `Székhely: ${REGISTERED_OFFICE}`,
           "Telephely: Mihai Viteazu utca 57., Nagykároly, Szatmár megye, Románia",
@@ -434,7 +461,7 @@ const hu: Record<DocumentKey, LegalDocumentContent> = {
       "Hogyan gyűjti, használja, őrzi és védi a Dennis Cars Carei a személyes adatokat.",
     lead:
       "A tájékoztató az űrlapokon megadott adatok és a weboldal működéséhez szükséges technikai adatok kezelését ismerteti.",
-    updated: "Utolsó frissítés: 2026. augusztus 2.",
+    updated: "Utolsó frissítés: 2026. augusztus 28.",
     sections: [
       {
         title: "1. Adatkezelő",
@@ -447,6 +474,9 @@ const hu: Record<DocumentKey, LegalDocumentContent> = {
           `Telefon – ${SECONDARY_CONTACT_NAME}: ${SECONDARY_PHONE}`,
           `Adatvédelmi e-mail: ${EMAIL}`,
         ],
+        footnotes: [
+          "Az adatkezelő a GDPR 37. cikke alapján nem köteles adatvédelmi tisztviselőt (DPO) kijelölni, és nem is jelölt ki. A személyes adatokkal kapcsolatos kéréseket a fenti elérhetőségekre kell küldeni, azokat a társaság vezetése intézi.",
+        ],
       },
       {
         title: "2. A kezelt adatok",
@@ -456,6 +486,10 @@ const hu: Record<DocumentKey, LegalDocumentContent> = {
           "Konszignációs kérelem: név, telefon, e-mail, márka, modell, évjárat, futásteljesítmény és a járműről megadott adatok.",
           "Technikai adatok: IP-cím, hozzáférés ideje, eszköz/böngésző típusa, kért oldalak és biztonsági naplók, amennyiben ezeket a tárhelyszolgáltatók létrehozzák.",
           "Beállítások: választott nyelv és a külső tartalomra vonatkozó döntés.",
+        ],
+        footnotes: [
+          "Az űrlapok kitöltése önkéntes, és a weboldal nem kér szükségtelen adatokat. A kötelezőként jelölt mezőket – jellemzően a nevet és egy elérhetőséget – azonban meg kell adni a válaszadáshoz: ezek nélkül a megkeresés nem rögzíthető és nem intézhető el. Az opcionális mezők következmény nélkül üresen hagyhatók.",
+          "Adásvételi vagy konszignációs szerződés megkötésekor, illetve garanciajegy kiállításakor az azonosító adatok megadása szerződéses és jogszabályi (adózási, számviteli) követelmény. Ezek hiányában a szerződés nem köthető meg és nem teljesíthető.",
         ],
       },
       {
@@ -471,14 +505,16 @@ const hu: Record<DocumentKey, LegalDocumentContent> = {
         title: "4. Címzettek és szolgáltatók",
         paragraphs: [
           "Az adatokhoz csak a megkereséseket és a weboldalt kezelő személyek férhetnek hozzá. Szerződött IT-szolgáltatók tárhelyet, adatbázist, tárolást, biztonságot és karbantartást biztosíthatnak.",
-          "A jelenlegi rendszer Supabase adatbázist/adminisztrációs hitelesítést és Cloudflare infrastruktúrát/tárolást használ. A Google csak akkor kap adatot közvetlenül a böngészőtől, ha a felhasználó engedélyezi és betöltődik a térkép.",
+          "A jelenleg igénybe vett szolgáltatók: Supabase (az űrlapokon érkező üzeneteket tároló adatbázis és az adminisztrátori fiók hitelesítése), Cloudflare (a weboldal kiszolgálása, a tartalomkézbesítő hálózat és az autófotók tárolása a Cloudflare R2-ben), valamint a Google Ireland Limited (kizárólag a beágyazott térkép). Az autók fotóit az üzemeltető Cloudflare-infrastruktúrája szolgálja ki, cookie nélkül, a weboldal működéséhez szükséges módon.",
+          "A Google csak akkor kap adatot közvetlenül a böngészőtől, ha a felhasználó engedélyezi a külső tartalmat és a térkép ténylegesen betöltődik. Az űrlapok, a katalógus és a weboldal többi része a Google bevonása nélkül működik.",
           "Adatok hatóságoknak, tanácsadóknak vagy bíróságoknak jogi kötelezettség vagy jogérvényesítés esetén továbbíthatók.",
         ],
       },
       {
         title: "5. Nemzetközi adattovábbítás",
         paragraphs: [
-          "Egyes szolgáltatók az EGT-n kívül is kezelhetnek adatokat. Ilyenkor a GDPR által elismert garanciákat – például megfelelőségi határozatot vagy általános szerződési feltételeket – kell alkalmazni.",
+          "Egyes szolgáltatók (különösen a Cloudflare, a Supabase és a Google) egyesült államokbeli székhelyű cégcsoport tagjai, és az EGT-n kívül is kezelhetnek adatokat. A továbbítás a GDPR által elismert garanciák alapján történik: az Európai Bizottság általános szerződéses feltételei (GDPR 46. cikk (2)) és – ahol alkalmazható – az EU–USA adatvédelmi keretre vonatkozó megfelelőségi határozat (GDPR 45. cikk) alapján, szükség esetén kiegészítő intézkedésekkel.",
+          "Az alkalmazott garanciák másolata az 1. pontban megadott e-mail-címen kérhető.",
         ],
       },
       {
@@ -487,7 +523,7 @@ const hu: Record<DocumentKey, LegalDocumentContent> = {
           "Szerződés nélküli megkeresések: az ügy lezárásáig, legfeljebb az utolsó kapcsolatfelvételtől számított 24 hónapig, kivéve jogvita vagy kötelező megőrzés esetén.",
           "Szerződéses, számviteli és garanciális iratok: a szerződés alatt, majd a vonatkozó törvényi határidőkig.",
           "Technikai és biztonsági naplók: kizárólag a biztonsághoz és hibakereséshez szükséges ideig.",
-          "Hozzájárulási beállítás: törlésig vagy a szabályzat verzióváltásáig.",
+          "Cookie-hozzájárulás: az utolsó választástól számított legfeljebb 6 hónapig, azt követően újra kérjük a hozzájárulást; a böngészőből bármikor törölhető, illetve a „Cookie-beállítások” gombbal módosítható.",
         ],
       },
       {
@@ -499,6 +535,10 @@ const hu: Record<DocumentKey, LegalDocumentContent> = {
           "tiltakozás a jogos érdeken alapuló adatkezelés ellen;",
           "a hozzájárulás bármikori visszavonása a korábbi kezelés jogszerűségének érintése nélkül;",
           "panasz benyújtása az ANSPDCP-hez vagy bírósági jogorvoslat.",
+        ],
+        footnotes: [
+          "A kérelmeket az 1. pontban megadott elérhetőségekre kell küldeni. A válasz indokolatlan késedelem nélkül, legkésőbb a kérelem beérkezésétől számított egy hónapon belül megérkezik; összetett kérelmeknél ez a határidő a GDPR 12. cikke szerint legfeljebb két hónappal meghosszabbítható. A jogok gyakorlása díjmentes; nyilvánvalóan megalapozatlan vagy túlzó kérelmeknél ésszerű díj számítható fel, vagy a teljesítés megtagadható.",
+          "Az illetékes felügyeleti hatóság: Autoritatea Națională de Supraveghere a Prelucrării Datelor cu Caracter Personal (ANSPDCP), B-dul G-ral. Gheorghe Magheru nr. 28-30, sector 1, 010336 București, telefon: +40 318 059 211, e-mail: anspdcp@dataprotection.ro.",
         ],
         links: [
           {
@@ -528,7 +568,7 @@ const hu: Record<DocumentKey, LegalDocumentContent> = {
       "A Dennis Cars Carei weboldalán használt cookie-k, hasonló technológiák és a beállítások módosítása.",
     lead:
       "A weboldal csak a működéshez szükséges technológiákat, továbbá hozzájárulás esetén külső Google Maps tartalmat használ.",
-    updated: "Utolsó frissítés: 2026. augusztus 2.",
+    updated: "Utolsó frissítés: 2026. augusztus 28.",
     settingsAction: "Cookie-beállítások megnyitása",
     sections: [
       {
@@ -552,7 +592,7 @@ const hu: Record<DocumentKey, LegalDocumentContent> = {
               "dennis-cars-cookie-consent-v1 (local storage)",
               "Dennis Cars Carei",
               "Megjegyzi a külső tartalom engedélyezését. A választás tiszteletben tartásához szükséges.",
-              "Törlésig vagy a szabályzat verzióváltásáig",
+              "Az utolsó választástól számított 6 hónapig; utána újra kérjük a hozzájárulást",
             ],
             [
               "Google Maps cookie-k és azonosítók, például NID, _Secure-ENID vagy SOCS",
@@ -562,6 +602,10 @@ const hu: Record<DocumentKey, LegalDocumentContent> = {
             ],
           ],
         },
+        footnotes: [
+          "A hozzájárulás előtt a weboldal semmilyen más cookie-t nem helyez el, és nem küld kérést harmadik fél szerverére: a betűtípusok helyben vannak tárolva, az autók fotóit pedig az üzemeltető Cloudflare-infrastruktúrája szolgálja ki, cookie és nyomkövető azonosító nélkül.",
+          "Az adminisztrációs felület munkamenet-cookie-jai (Supabase Auth) kizárólag az adminisztrátor bejelentkezésekor jönnek létre, a nyilvános oldal látogatóinál soha.",
+        ],
       },
       {
         title: "3. Külső Google Maps tartalom",
@@ -584,7 +628,8 @@ const hu: Record<DocumentKey, LegalDocumentContent> = {
         title: "4. Hozzájárulás és visszavonás",
         paragraphs: [
           "Első látogatáskor elfogadhatod vagy elutasíthatod az opcionális technológiákat, illetve megnyithatod a részletes beállításokat. Az elutasítás nem érinti a katalógust, az űrlapokat vagy az elérhetőségeket; csak a beágyazott térkép marad blokkolva.",
-          "A választás bármikor módosítható a lábléc „Cookie-beállítások” gombjával. A webhelyadatok böngészőből történő törlése a mentett beállítást is eltávolítja, ezért a banner újra megjelenik.",
+          "A választás bármikor módosítható a lábléc „Cookie-beállítások” gombjával, és a hozzájárulás visszavonása ugyanolyan egyszerű, mint a megadása. A webhelyadatok böngészőből történő törlése a mentett beállítást is eltávolítja, ezért a banner újra megjelenik.",
+          "A hozzájárulás nem örökre szól: a választást legfeljebb 6 hónapig őrizzük meg, azután a banner újra megjelenik megerősítésre. Az új választásig az opcionális technológiák kikapcsolva maradnak.",
         ],
       },
       {

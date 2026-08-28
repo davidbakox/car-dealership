@@ -12,7 +12,16 @@
     "contact": "Contact",
     "menu": "Meniu",
     "close": "Închide",
-    "language": "Limbă"
+    "language": "Limbă",
+    "menuLead": "Navighează",
+    "quickContact": "Contact rapid",
+    "desc": {
+      "home": "Noutăți și mașini recomandate",
+      "cars": "Tot stocul disponibil, cu filtre",
+      "sell": "Consignație, schimb și buy-back",
+      "about": "Cine suntem și cum lucrăm",
+      "contact": "Program, hartă și formular"
+    }
   },
   "common": {
     "loading": "Se încarcă…",
@@ -275,7 +284,8 @@
     "close": "Închide",
     "mapBlocked": "Harta este blocată",
     "mapBlockedText": "Google Maps se încarcă doar după ce permiți conținutul extern.",
-    "openSettings": "Deschide setările"
+    "openSettings": "Deschide setările",
+    "retention": "Alegerea ta este memorată 6 luni, apoi îți cerem din nou acordul."
   },
   "privacyNotice": {
     "prefix": "Prin trimiterea formularului, datele tale vor fi folosite pentru a răspunde solicitării, conform",

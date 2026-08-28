@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
 import {
@@ -9,12 +9,23 @@ import {
   saveCookieConsent,
 } from "@/lib/cookie-consent";
 
+// Accept and Reject are deliberately the SAME size, weight and shape, side by
+// side on the first layer. Under Legea 506/2004 art. 4^1 and GDPR art. 7,
+// refusing must be as easy as accepting, so the reject button gets no visual
+// demotion — only the fill colour differs.
+const consentButton =
+  "inline-flex flex-1 items-center justify-center rounded border px-5 py-3 text-sm font-medium transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/60 sm:flex-none sm:min-w-[9.5rem]";
+const consentButtonNeutral = `${consentButton} border-line-strong bg-surface-2 text-ink hover:bg-line`;
+const consentButtonAccent = `${consentButton} border-accent bg-accent text-white hover:bg-accent-hover`;
+
 export default function CookieConsent() {
   const t = useTranslations("cookieConsent");
   const [ready, setReady] = useState(false);
   const [hasChoice, setHasChoice] = useState(true);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [externalMedia, setExternalMedia] = useState(false);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const restoreFocusRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     const stored = readCookieConsent();
@@ -23,6 +34,10 @@ export default function CookieConsent() {
     setReady(true);
 
     const openSettings = () => {
+      restoreFocusRef.current =
+        document.activeElement instanceof HTMLElement
+          ? document.activeElement
+          : null;
       const latest = readCookieConsent();
       setExternalMedia(latest?.externalMedia ?? false);
       setSettingsOpen(true);
@@ -33,12 +48,62 @@ export default function CookieConsent() {
       window.removeEventListener(COOKIE_SETTINGS_OPEN_EVENT, openSettings);
   }, []);
 
+  const closeSettings = useCallback(() => {
+    setSettingsOpen(false);
+    restoreFocusRef.current?.focus();
+    restoreFocusRef.current = null;
+  }, []);
+
   function commit(allowExternalMedia: boolean) {
     saveCookieConsent(allowExternalMedia);
     setExternalMedia(allowExternalMedia);
     setHasChoice(true);
     setSettingsOpen(false);
+    restoreFocusRef.current?.focus();
+    restoreFocusRef.current = null;
   }
+
+  // Modal behaviour for the settings dialog: Escape closes it (only once a
+  // choice exists — never as a way to dismiss the first-visit prompt without
+  // deciding), and Tab is trapped inside it.
+  useEffect(() => {
+    if (!settingsOpen) return;
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && hasChoice) {
+        event.preventDefault();
+        closeSettings();
+        return;
+      }
+      if (event.key !== "Tab") return;
+
+      const focusables = dialogRef.current?.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      );
+      if (!focusables?.length) return;
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      const active = document.activeElement;
+
+      if (
+        event.shiftKey &&
+        (active === first || !dialogRef.current?.contains(active))
+      ) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && active === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+    const id = window.setTimeout(() => dialogRef.current?.focus(), 40);
+    return () => {
+      window.removeEventListener("keydown", onKeyDown);
+      window.clearTimeout(id);
+    };
+  }, [settingsOpen, hasChoice, closeSettings]);
 
   if (!ready) return null;
 
@@ -47,6 +112,7 @@ export default function CookieConsent() {
       {!hasChoice && !settingsOpen && (
         <section
           className="fixed inset-x-3 bottom-3 z-[90] mx-auto max-w-4xl rounded-card border border-line-strong bg-surface p-5 shadow-2xl shadow-black/50 sm:inset-x-6 sm:p-6"
+          role="region"
           aria-label={t("bannerTitle")}
         >
           <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
@@ -68,21 +134,24 @@ export default function CookieConsent() {
               <button
                 type="button"
                 onClick={() => commit(false)}
-                className="btn-outline"
+                className={consentButtonNeutral}
               >
                 {t("reject")}
               </button>
               <button
                 type="button"
-                onClick={() => setSettingsOpen(true)}
-                className="btn-outline"
+                onClick={() => {
+                  restoreFocusRef.current = null;
+                  setSettingsOpen(true);
+                }}
+                className={consentButtonNeutral}
               >
                 {t("settings")}
               </button>
               <button
                 type="button"
                 onClick={() => commit(true)}
-                className="btn-primary"
+                className={consentButtonAccent}
               >
                 {t("accept")}
               </button>
@@ -97,15 +166,17 @@ export default function CookieConsent() {
           role="presentation"
           onMouseDown={(event) => {
             if (event.currentTarget === event.target && hasChoice) {
-              setSettingsOpen(false);
+              closeSettings();
             }
           }}
         >
-          <section
+          <div
+            ref={dialogRef}
             role="dialog"
             aria-modal="true"
             aria-labelledby="cookie-settings-title"
-            className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-card border border-line-strong bg-surface p-5 shadow-2xl sm:p-7"
+            tabIndex={-1}
+            className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-card border border-line-strong bg-surface p-5 shadow-2xl outline-none sm:p-7"
           >
             <div className="flex items-start justify-between gap-4">
               <div>
@@ -122,7 +193,7 @@ export default function CookieConsent() {
               {hasChoice && (
                 <button
                   type="button"
-                  onClick={() => setSettingsOpen(false)}
+                  onClick={closeSettings}
                   className="flex h-10 w-10 shrink-0 items-center justify-center rounded border border-line text-xl text-ink-muted hover:text-ink"
                   aria-label={t("close")}
                 >
@@ -171,7 +242,7 @@ export default function CookieConsent() {
             </div>
 
             <p className="mt-5 text-xs leading-relaxed text-ink-faint">
-              {t("noAnalytics")}{" "}
+              {t("retention")} {t("noAnalytics")}{" "}
               <Link
                 href="/privacy"
                 className="text-ink-muted underline underline-offset-2"
@@ -184,19 +255,19 @@ export default function CookieConsent() {
               <button
                 type="button"
                 onClick={() => commit(false)}
-                className="btn-outline"
+                className={consentButtonNeutral}
               >
                 {t("reject")}
               </button>
               <button
                 type="button"
                 onClick={() => commit(externalMedia)}
-                className="btn-primary"
+                className={consentButtonAccent}
               >
                 {t("save")}
               </button>
             </div>
-          </section>
+          </div>
         </div>
       )}
     </>

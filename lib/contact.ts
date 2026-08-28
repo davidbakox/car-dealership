@@ -5,6 +5,12 @@ export const CUI = "RO47863725";
 export const TRADE_REGISTER_NUMBER = "J2023000311309";
 export const EUID = "ROONRC.J2023000311309";
 export const INCORPORATION_DATE = "22.03.2023";
+// Legea 31/1990 art. 74 requires an SRL to publish its subscribed share capital
+// alongside the other identification data. Fill this in from the company excerpt
+// (certificat constatator) — e.g. "200 RON". While it is empty the bullet is
+// simply omitted rather than showing an invented figure.
+export const SHARE_CAPITAL: string = "500 RON";
+
 export const REGISTERED_OFFICE =
   "Sat Căpleni nr. 99, cod poștal 447080, jud. Satu Mare, România";
 
