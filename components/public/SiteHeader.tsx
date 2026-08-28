@@ -172,8 +172,8 @@ export default function SiteHeader() {
 
       {/* Mobile slide-out menu */}
       <div
-        className={`fixed inset-0 z-[60] md:hidden ${
-          open ? "visible" : "invisible delay-300"
+        className={`fixed inset-0 z-[60] transition-[visibility] duration-[420ms] md:hidden motion-reduce:transition-none ${
+          open ? "visible" : "invisible"
         }`}
       >
         {/* Backdrop */}
@@ -194,6 +194,7 @@ export default function SiteHeader() {
           role="dialog"
           aria-modal="true"
           aria-label={t("menu")}
+          tabIndex={-1}
           className={`absolute right-0 top-0 flex h-[100dvh] w-[88%] max-w-[400px] flex-col overflow-hidden border-l border-line-strong bg-base shadow-[-24px_0_60px_-20px_rgba(0,0,0,0.85)] outline-none transition-transform duration-[420ms] ease-smooth motion-reduce:transition-none ${
             open ? "translate-x-0" : "translate-x-full"
           }`}
