@@ -285,7 +285,7 @@ const ro: Record<DocumentKey, LegalDocumentContent> = {
             [
               "NEXT_LOCALE",
               "Dennis Cars Carei",
-              "Memorează limba română/maghiară și permite rutarea corectă. Necesar.",
+              "Memorează limba română/maghiară aleasă și asigură rutarea corectă. Se creează doar dacă schimbi limba din comutatorul RO/HU. Necesar.",
               "1 an",
             ],
             [
@@ -303,7 +303,8 @@ const ro: Record<DocumentKey, LegalDocumentContent> = {
           ],
         },
         footnotes: [
-          "Înainte de consimțământ site-ul nu setează niciun alt cookie și nu trimite cereri către servere terțe: fonturile sunt găzduite local, iar fotografiile mașinilor sunt livrate din infrastructura Cloudflare a operatorului, fără cookie-uri și fără identificatori de urmărire.",
+          "La prima vizită site-ul nu setează niciun cookie: limba nu este dedusă din browser, iar pagina se deschide implicit în română. Cookie-ul de limbă apare numai după ce alegi manual altă limbă.",
+          "Înainte de consimțământ site-ul nu trimite cereri către servere terțe: fonturile sunt găzduite local, iar fotografiile mașinilor sunt livrate din infrastructura Cloudflare a operatorului, fără cookie-uri și fără identificatori de urmărire.",
           "Cookie-urile de sesiune ale zonei de administrare (Supabase Auth) se setează numai la autentificarea administratorului și nu apar niciodată la vizitatorii site-ului public.",
         ],
       },
@@ -585,7 +586,7 @@ const hu: Record<DocumentKey, LegalDocumentContent> = {
             [
               "NEXT_LOCALE",
               "Dennis Cars Carei",
-              "Megjegyzi a román/magyar nyelvet és biztosítja a helyes útvonalat. Szükséges.",
+              "Megjegyzi a választott román/magyar nyelvet és biztosítja a helyes útvonalat. Csak akkor jön létre, ha a RO/HU kapcsolóval nyelvet váltasz. Szükséges.",
               "1 év",
             ],
             [
@@ -603,7 +604,8 @@ const hu: Record<DocumentKey, LegalDocumentContent> = {
           ],
         },
         footnotes: [
-          "A hozzájárulás előtt a weboldal semmilyen más cookie-t nem helyez el, és nem küld kérést harmadik fél szerverére: a betűtípusok helyben vannak tárolva, az autók fotóit pedig az üzemeltető Cloudflare-infrastruktúrája szolgálja ki, cookie és nyomkövető azonosító nélkül.",
+          "Az első látogatáskor a weboldal egyetlen cookie-t sem helyez el: a nyelvet nem a böngészőből következtetjük ki, az oldal alapértelmezetten románul nyílik meg. A nyelvi cookie csak akkor jön létre, ha kézzel másik nyelvet választasz.",
+          "A hozzájárulás előtt a weboldal nem küld kérést harmadik fél szerverére: a betűtípusok helyben vannak tárolva, az autók fotóit pedig az üzemeltető Cloudflare-infrastruktúrája szolgálja ki, cookie és nyomkövető azonosító nélkül.",
           "Az adminisztrációs felület munkamenet-cookie-jai (Supabase Auth) kizárólag az adminisztrátor bejelentkezésekor jönnek létre, a nyilvános oldal látogatóinál soha.",
         ],
       },

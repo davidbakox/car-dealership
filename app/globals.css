@@ -71,6 +71,41 @@ textarea {
   .card {
     @apply rounded-card border border-line bg-surface;
   }
+  /* Icon + heading + copy tile (sell steps, "why us", contact cards …).
+     Lifts and warms on hover, presses in on tap, and sweeps a thin accent line
+     across its top edge — enough motion to feel alive, little enough to stay
+     out of the way of reading. */
+  .tile-card {
+    @apply relative isolate overflow-hidden rounded-card border border-line bg-surface
+           transition-[transform,border-color,box-shadow] duration-300 ease-smooth
+           hover:-translate-y-1 hover:border-accent/50 hover:shadow-xl hover:shadow-black/30
+           active:translate-y-0 active:scale-[0.99];
+  }
+  .tile-card::before {
+    content: "";
+    @apply pointer-events-none absolute inset-x-0 top-0 h-px origin-left scale-x-0 bg-gradient-to-r from-accent via-accent-hover to-transparent;
+    transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .tile-card:hover::before,
+  .tile-card:focus-within::before {
+    transform: scaleX(1);
+  }
+  /* The icon chip inside a .tile-card — pair with `group` on the tile. */
+  .tile-icon {
+    @apply flex shrink-0 items-center justify-center rounded bg-accent-soft text-accent
+           transition-[transform,background-color,color] duration-300 ease-smooth
+           group-hover:-rotate-6 group-hover:scale-110 group-hover:bg-accent group-hover:text-white;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .tile-card,
+    .tile-card::before,
+    .tile-icon {
+      transition: none;
+    }
+    .tile-card:hover {
+      transform: none;
+    }
+  }
   /* Nav link with an animated underline that grows from the left */
   .nav-link {
     @apply relative;

@@ -26,12 +26,16 @@ export default function BodyTypeGrid({
         </div>
 
         <ul className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-7">
-          {BODY_TYPES.map((body) => {
+          {BODY_TYPES.map((body, index) => {
             const count = counts[body] ?? 0;
+            // Only relevant on the two-column phone grid; from `sm` up the tile
+            // count divides evenly enough that no row is left half empty.
+            const isOrphan =
+              BODY_TYPES.length % 2 === 1 && index === BODY_TYPES.length - 1;
             const inner = (
               <>
                 <span
-                  className={`flex h-14 w-14 items-center justify-center rounded-full transition-colors ${
+                  className={`flex h-14 w-14 items-center justify-center rounded-full transition-transform duration-300 ease-smooth group-hover:scale-105 ${
                     count > 0
                       ? "bg-accent-soft text-accent-hover group-hover:bg-accent group-hover:text-white"
                       : "bg-surface-2 text-ink-faint"
@@ -39,16 +43,25 @@ export default function BodyTypeGrid({
                 >
                   <Icon name={`body-${body}`} size={30} />
                 </span>
-                <span className="mt-3 text-sm font-medium">{tb(body)}</span>
-                <span className="mt-0.5 text-xs text-ink-faint">{count}</span>
+                <span
+                  className={`mt-3 flex flex-col items-center ${
+                    isOrphan ? "max-sm:mt-0 max-sm:items-start" : ""
+                  }`}
+                >
+                  <span className="text-sm font-medium">{tb(body)}</span>
+                  <span className="mt-0.5 text-xs text-ink-faint">{count}</span>
+                </span>
               </>
             );
 
-            const shell =
-              "group flex h-full flex-col items-center rounded-card border p-4 text-center transition-all duration-200 ease-smooth";
+            const shell = `group flex h-full flex-col items-center rounded-card border p-4 text-center transition-all duration-200 ease-smooth ${
+              isOrphan
+                ? "max-sm:flex-row max-sm:items-center max-sm:justify-center max-sm:gap-4 max-sm:text-left"
+                : ""
+            }`;
 
             return (
-              <li key={body}>
+              <li key={body} className={isOrphan ? "max-sm:col-span-2" : undefined}>
                 {count > 0 ? (
                   <Link
                     href={{ pathname: "/cars", query: { body } }}

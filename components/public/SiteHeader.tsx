@@ -16,11 +16,11 @@ import {
 } from "@/lib/contact";
 
 const navHrefs = [
-  { href: "/", key: "home" },
-  { href: "/cars", key: "cars" },
-  { href: "/sell", key: "sell" },
-  { href: "/about", key: "about" },
-  { href: "/contact", key: "contact" },
+  { href: "/", key: "home", icon: "home" },
+  { href: "/cars", key: "cars", icon: "car" },
+  { href: "/sell", key: "sell", icon: "swap" },
+  { href: "/about", key: "about", icon: "shield" },
+  { href: "/contact", key: "contact", icon: "phone" },
 ] as const;
 
 export default function SiteHeader() {
@@ -259,11 +259,13 @@ export default function SiteHeader() {
                         />
                         <span
                           aria-hidden="true"
-                          className={`w-6 shrink-0 font-display text-xs tabular-nums tracking-widest ${
-                            isActive ? "text-accent" : "text-ink-faint"
+                          className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-card transition-colors duration-200 ${
+                            isActive
+                              ? "bg-accent text-white"
+                              : "bg-surface-2 text-ink-muted group-hover:bg-accent-soft group-hover:text-accent-hover"
                           }`}
                         >
-                          {String(index + 1).padStart(2, "0")}
+                          <Icon name={item.icon} size={19} />
                         </span>
                         <span className="min-w-0 flex-1">
                           <span
@@ -303,39 +305,89 @@ export default function SiteHeader() {
                 {t("quickContact")}
               </p>
 
-              <a href={PHONE_HREF} className="btn-primary w-full">
-                <Icon name="phone" size={16} />
-                {tCommon("callNow")}
-                <span className="font-normal opacity-80">· {PHONE}</span>
+              {/* Primary action: the number people actually ring, given the
+                  weight of a card rather than a line in a list. */}
+              <a
+                href={PHONE_HREF}
+                className="group flex items-center gap-3 rounded-card bg-accent px-4 py-3.5 text-white shadow-lg shadow-accent/20 transition-[transform,background-color] duration-200 ease-smooth hover:bg-accent-hover active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/60"
+              >
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/15 transition-transform duration-300 ease-smooth group-hover:scale-110">
+                  <Icon name="phone" size={17} />
+                </span>
+                <span className="min-w-0">
+                  <span className="block text-[11px] font-medium uppercase tracking-[0.18em] text-white/70">
+                    {tCommon("callNow")}
+                  </span>
+                  <span className="block truncate font-display text-lg font-semibold leading-tight">
+                    {PHONE}
+                  </span>
+                </span>
+                <span
+                  aria-hidden="true"
+                  className="ml-auto shrink-0 transition-transform duration-300 ease-smooth group-hover:translate-x-1"
+                >
+                  <Icon name="arrow-right" size={17} />
+                </span>
               </a>
 
-              <ul className="mt-3 space-y-2.5 text-sm text-ink-muted">
-                <li>
-                  <a
-                    href={SECONDARY_PHONE_HREF}
-                    className="flex items-center gap-2.5 transition-colors hover:text-accent-hover"
-                  >
-                    <Icon name="phone" size={15} className="shrink-0 text-ink-faint" />
-                    {SECONDARY_PHONE}
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href={EMAIL_HREF}
-                    className="flex items-center gap-2.5 break-all transition-colors hover:text-accent-hover"
-                  >
-                    <Icon name="mail" size={15} className="shrink-0 text-ink-faint" />
-                    {EMAIL}
-                  </a>
-                </li>
-                <li className="flex items-start gap-2.5">
-                  <Icon name="pin" size={15} className="mt-0.5 shrink-0 text-ink-faint" />
-                  <span>{tContact("address")}</span>
-                </li>
-                <li className="flex items-start gap-2.5">
-                  <Icon name="clock" size={15} className="mt-0.5 shrink-0 text-ink-faint" />
-                  <span>{tContact("hoursValue")}</span>
-                </li>
+              {/* Everything else as labelled rows on one divided card, so the
+                  values line up instead of running together. */}
+              <ul className="mt-3 divide-y divide-line overflow-hidden rounded-card border border-line bg-surface/50">
+                {[
+                  {
+                    icon: "phone",
+                    label: tContact("phoneLabel"),
+                    value: SECONDARY_PHONE,
+                    href: SECONDARY_PHONE_HREF,
+                  },
+                  {
+                    icon: "mail",
+                    label: tContact("emailLabel"),
+                    value: EMAIL,
+                    href: EMAIL_HREF,
+                  },
+                  {
+                    icon: "pin",
+                    label: tContact("addressLabel"),
+                    value: tContact("address"),
+                  },
+                  {
+                    icon: "clock",
+                    label: tContact("hoursLabel"),
+                    value: tContact("hoursValue"),
+                  },
+                ].map((row) => {
+                  const body = (
+                    <>
+                      <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-surface-2 text-ink-faint transition-colors duration-200 group-hover:bg-accent-soft group-hover:text-accent-hover">
+                        <Icon name={row.icon} size={15} />
+                      </span>
+                      <span className="min-w-0">
+                        <span className="block text-[10px] font-medium uppercase tracking-[0.2em] text-ink-faint">
+                          {row.label}
+                        </span>
+                        <span className="mt-0.5 block break-words text-sm leading-snug text-ink">
+                          {row.value}
+                        </span>
+                      </span>
+                    </>
+                  );
+                  const shell = "group flex items-start gap-3 px-3.5 py-3";
+                  return (
+                    <li key={row.label}>
+                      {row.href ? (
+                        <a
+                          href={row.href}
+                          className={`${shell} transition-colors duration-200 hover:bg-surface-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent/60`}
+                        >
+                          {body}
+                        </a>
+                      ) : (
+                        <div className={shell}>{body}</div>
+                      )}
+                    </li>
+                  );
+                })}
               </ul>
             </div>
 

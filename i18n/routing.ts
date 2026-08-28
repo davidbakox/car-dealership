@@ -10,11 +10,12 @@ export const routing = defineRouting({
   locales: ["ro", "hu"],
   defaultLocale: "ro",
   localePrefix: "as-needed",
-  // Persist the visitor's choice; next-intl reads/writes this cookie.
-  localeCookie: {
-    name: "NEXT_LOCALE",
-    maxAge: 60 * 60 * 24 * 365,
-  },
+  // Never infer the language from the browser: Carei has a large Hungarian
+  // speaking population, but the site is Romanian first and must open in RO for
+  // everyone who has not chosen otherwise. Turning this off also stops next-intl
+  // from managing NEXT_LOCALE, so LanguageSwitcher writes it on an explicit
+  // switch and the middleware honours it on the entry URL only.
+  localeDetection: false,
   pathnames: {
     "/": "/",
     "/cars": { ro: "/masini", hu: "/autok" },
@@ -36,6 +37,11 @@ export const routing = defineRouting({
 });
 
 export type Locale = (typeof routing.locales)[number];
+
+// Remembers an explicit language choice. Strictly necessary (it only stores the
+// preference the visitor asked for), and documented as such in the cookie policy.
+export const LOCALE_COOKIE = "NEXT_LOCALE";
+export const LOCALE_COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
 
 // Locale-aware navigation helpers — use these instead of next/link & next/navigation
 // so links automatically carry the active locale and localized pathname.

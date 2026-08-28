@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import createIntlMiddleware from "next-intl/middleware";
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
-import { routing } from "./i18n/routing";
+import { routing, LOCALE_COOKIE } from "./i18n/routing";
 import { ADMIN_PATH } from "@/lib/env";
 import { isAdminEmail } from "@/lib/admin-identity";
 
@@ -22,6 +22,17 @@ export async function middleware(request: NextRequest) {
   if (pathname.startsWith("/api")) {
     return handleSupabase(request, { guardAdmin: false });
   }
+  // The site is Romanian first. `localeDetection` is off (see routing.ts), so
+  // next-intl never reads `accept-language` and every unprefixed URL resolves
+  // to RO — a Hungarian browser no longer gets bounced to /hu on a first visit.
+  // A choice the visitor actually made is still honoured, but only on the entry
+  // point: an explicit deep link always wins over a remembered preference.
+  if (pathname === "/" && request.cookies.get(LOCALE_COOKIE)?.value === "hu") {
+    const url = request.nextUrl.clone();
+    url.pathname = "/hu";
+    return NextResponse.redirect(url);
+  }
+
   return intlMiddleware(request);
 }
 

@@ -194,35 +194,56 @@ function Hero({
           <SearchPanel makes={makes} modelsByMake={models} action={carsPath} />
         </Reveal>
 
-        {/* Featured-car credit + trust chips under the panel. */}
+        {/* Trust points: one pill each, two per row on a phone. */}
         <Reveal index={3}>
-          <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
-            <div className="flex flex-wrap gap-x-6 gap-y-2">
-              {trustKeys.map((key, i) => (
-                <span
-                  key={key}
-                  className="flex items-center gap-1.5 text-xs font-medium text-ink-muted"
-                >
-                  <span className="text-accent">
-                    <Icon name={trustIcons[i]} size={14} />
-                  </span>
+          <ul className="mt-6 grid grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-3">
+            {trustKeys.map((key, i) => (
+              <li
+                key={key}
+                className="flex items-center gap-2.5 rounded-card border border-line bg-surface/70 px-3 py-2.5 backdrop-blur-sm transition-colors duration-200 hover:border-accent/40"
+              >
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent-soft text-accent-hover">
+                  <Icon name={trustIcons[i]} size={15} />
+                </span>
+                <span className="text-xs font-medium leading-snug text-ink-muted">
                   {tt(key)}
                 </span>
-              ))}
-            </div>
-            {heroCar && (
-              <Link
-                href={{ pathname: "/cars/[id]", params: { id: heroCar.id } }}
-                className="group flex items-center gap-2 text-xs text-ink-faint transition-colors hover:text-ink"
-              >
-                <span className="uppercase tracking-wide">{t("heroFeatured")}:</span>
-                <span className="font-medium text-ink-muted group-hover:text-accent-hover">
-                  {heroCar.title} · {formatPrice(heroCar.price, heroCar.currency)}
-                </span>
-              </Link>
-            )}
-          </div>
+              </li>
+            ))}
+          </ul>
         </Reveal>
+
+        {/* Featured car: a card, not a caption. */}
+        {heroCar && (
+          <Reveal index={4}>
+            <Link
+              href={{ pathname: "/cars/[id]", params: { id: heroCar.id } }}
+              className="group mt-3 flex items-center gap-3 rounded-card border border-line bg-surface/70 py-3 pl-4 pr-3 backdrop-blur-sm transition-[transform,border-color] duration-200 ease-smooth hover:-translate-y-0.5 hover:border-accent/50 active:translate-y-0"
+            >
+              <span
+                aria-hidden="true"
+                className="h-9 w-1 shrink-0 rounded-full bg-accent"
+              />
+              <span className="min-w-0 flex-1">
+                <span className="block text-[10px] font-medium uppercase tracking-[0.2em] text-ink-faint">
+                  {t("heroFeatured")}
+                </span>
+                <span className="mt-0.5 block truncate text-sm font-medium text-ink">
+                  {heroCar.title}
+                </span>
+              </span>
+              <span className="shrink-0 font-display text-sm font-semibold text-accent-hover">
+                {formatPrice(heroCar.price, heroCar.currency)}
+              </span>
+              <span
+                aria-hidden="true"
+                className="shrink-0 text-ink-faint transition-transform duration-300 ease-smooth group-hover:translate-x-1 group-hover:text-accent-hover"
+              >
+                <Icon name="arrow-right" size={16} />
+              </span>
+            </Link>
+          </Reveal>
+        )}
       </div>
     </section>
   );
@@ -242,8 +263,8 @@ function WhyChooseUs() {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {whyItems.map((item, i) => (
           <Reveal key={item.key} index={i}>
-            <div className="card h-full p-6 transition-all duration-200 ease-smooth hover:-translate-y-1 hover:border-line-strong">
-              <span className="flex h-11 w-11 items-center justify-center rounded bg-accent-soft text-accent">
+            <div className="tile-card group h-full p-6">
+              <span className="tile-icon h-11 w-11">
                 <Icon name={item.icon} size={22} />
               </span>
               <h3 className="mt-4 font-medium text-ink">
@@ -345,14 +366,14 @@ function FinancingStrip({ locale }: { locale: "ro" | "hu" }) {
           <Link
             href="/contact"
             aria-label={t("financingCta")}
-            className="group block overflow-hidden rounded-card border border-line transition-all duration-200 ease-smooth hover:-translate-y-1 hover:border-line-strong hover:shadow-lg hover:shadow-black/30"
+            className="group -mx-4 block overflow-hidden border-y border-line transition-all duration-200 ease-smooth hover:-translate-y-1 hover:border-line-strong hover:shadow-lg hover:shadow-black/30 sm:mx-0 sm:rounded-card sm:border"
           >
             <Image
               src={banner.src}
               alt={banner.alt}
               width={1748}
               height={900}
-              sizes="(min-width: 1024px) 660px, (min-width: 640px) 768px, calc(100vw - 2rem)"
+              sizes="(min-width: 1024px) 660px, (min-width: 640px) 768px, 100vw"
               className="h-auto w-full transition-transform duration-300 ease-smooth group-hover:scale-[1.02]"
             />
           </Link>
@@ -410,8 +431,8 @@ function SellStrip() {
         <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
           {steps.map((s, i) => (
             <Reveal key={s.title} index={i}>
-              <div className="flex items-start gap-4 rounded-card border border-line bg-base p-5">
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded bg-accent-soft text-accent">
+              <div className="tile-card group flex h-full items-start gap-4 bg-base p-5">
+                <span className="tile-icon h-10 w-10">
                   <Icon name={s.icon} size={20} />
                 </span>
                 <div>

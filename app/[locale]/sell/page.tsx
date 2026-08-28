@@ -49,10 +49,10 @@ export default async function SellPage({
         <div className="space-y-4 lg:col-span-2">
           {steps.map((s, i) => (
             <Reveal key={s.title} index={i}>
-              <div className="flex items-start gap-4 rounded-card border border-line bg-surface p-5">
-                <span className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded bg-accent-soft text-accent">
+              <div className="tile-card group flex items-start gap-4 p-5">
+                <span className="tile-icon relative h-11 w-11">
                   <Icon name={s.icon} size={22} />
-                  <span className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-accent font-display text-[11px] font-semibold text-white">
+                  <span className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-accent font-display text-[11px] font-semibold text-white transition-colors duration-300 group-hover:bg-white group-hover:text-accent">
                     {i + 1}
                   </span>
                 </span>
@@ -93,9 +93,11 @@ export default async function SellPage({
           <Reveal index={4}>
             <a
               href={PHONE_HREF}
-              className="flex items-center justify-center gap-2 rounded-card border border-line bg-surface p-5 font-medium text-ink transition-colors hover:border-accent hover:text-accent"
+              className="tile-card group flex items-center justify-center gap-2 p-5 font-medium text-ink"
             >
-              <Icon name="phone" size={20} />
+              <span className="transition-transform duration-300 ease-smooth group-hover:-rotate-12 group-hover:scale-110">
+                <Icon name="phone" size={20} />
+              </span>
               {PHONE}
             </a>
           </Reveal>

@@ -3,7 +3,14 @@
 import { useParams } from "next/navigation";
 import { useLocale } from "next-intl";
 import { useTransition } from "react";
-import { usePathname, useRouter, routing, type Locale } from "@/i18n/routing";
+import {
+  usePathname,
+  useRouter,
+  routing,
+  LOCALE_COOKIE,
+  LOCALE_COOKIE_MAX_AGE,
+  type Locale,
+} from "@/i18n/routing";
 
 // RO/HU toggle. Switching re-navigates to the SAME page in the target locale
 // (next-intl rebuilds the localized pathname, incl. dynamic segments). The
@@ -21,6 +28,10 @@ export default function LanguageSwitcher({
 
   function switchTo(locale: Locale) {
     if (locale === active) return;
+    // Browser-language detection is off, so nothing else writes this cookie:
+    // it records the choice the visitor just made, and only the entry URL "/"
+    // acts on it (see middleware.ts).
+    document.cookie = `${LOCALE_COOKIE}=${locale}; path=/; max-age=${LOCALE_COOKIE_MAX_AGE}; samesite=lax`;
     startTransition(() => {
       // Pass current params so dynamic routes (/cars/[id]) re-localize correctly.
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
