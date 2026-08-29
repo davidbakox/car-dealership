@@ -41,7 +41,7 @@ export default function SellForm() {
     <form action={action} className="space-y-4" noValidate>
       {state.error && (
         <p className="rounded border border-red-500/40 bg-red-950/40 px-3 py-2 text-sm text-red-400">
-          {tf("error")}
+          {tf(state.error === "rateLimited" ? "errorRateLimited" : "error")}
         </p>
       )}
 

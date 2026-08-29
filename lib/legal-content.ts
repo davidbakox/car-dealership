@@ -161,7 +161,7 @@ const ro: Record<DocumentKey, LegalDocumentContent> = {
       "Cum colectează, folosește, păstrează și protejează Dennis Cars Carei datele cu caracter personal.",
     lead:
       "Politica descrie prelucrarea datelor trimise prin formularele site-ului și datele tehnice necesare funcționării sale.",
-    updated: "Ultima actualizare: 28 august 2026",
+    updated: "Ultima actualizare: 29 august 2026",
     sections: [
       {
         title: "1. Operatorul datelor",
@@ -202,7 +202,18 @@ const ro: Record<DocumentKey, LegalDocumentContent> = {
         ],
       },
       {
-        title: "4. Destinatari și furnizori",
+        title: "4. Fotografii cu clienți și dreptul la propria imagine",
+        paragraphs: [
+          "Pe site sunt publicate fotografii realizate la predarea autoturismelor, în care pot apărea persoane identificabile. O fotografie în care o persoană poate fi recunoscută este dată cu caracter personal, iar publicarea ei pe site este o prelucrare distinctă, având ca scop prezentarea activității societății.",
+          "Temeiul este consimțământul persoanei fotografiate – art. 6 alin. (1) lit. a) GDPR – coroborat cu dreptul la propria imagine prevăzut de art. 73 din Codul civil. Fotografiile sunt publicate numai cu acordul persoanelor care apar în ele, iar în cazul minorilor este necesar acordul părintelui sau al reprezentantului legal.",
+          "Consimțământul poate fi retras oricând, fără justificare și fără costuri. La cerere, fotografia este eliminată de pe site, iar elementele care permit identificarea – chipul sau numărul de înmatriculare – pot fi acoperite în locul eliminării, dacă persoana preferă această variantă. Retragerea nu afectează legalitatea publicării anterioare.",
+        ],
+        footnotes: [
+          "Numărul de înmatriculare vizibil într-o fotografie este, la rândul său, dată cu caracter personal atunci când permite identificarea proprietarului. Solicitarea de acoperire sau de eliminare se transmite la datele de contact de la punctul 1 și este rezolvată în cel mai scurt timp posibil.",
+        ],
+      },
+      {
+        title: "5. Destinatari și furnizori",
         paragraphs: [
           "Accesul este limitat la persoanele care gestionează solicitările și administrarea site-ului. Datele pot fi prelucrate de furnizori IT contractați, inclusiv servicii de hosting, bază de date, stocare, securitate și mentenanță.",
           "Furnizorii utilizați în prezent sunt: Supabase (baza de date în care se salvează mesajele din formulare și autentificarea contului de administrare), Cloudflare (găzduirea site-ului, rețeaua de livrare și stocarea fotografiilor auto în Cloudflare R2) și Google Ireland Limited (exclusiv harta încorporată). Fotografiile mașinilor sunt livrate din infrastructura Cloudflare a operatorului, fără cookie-uri, ca parte necesară a funcționării site-ului.",
@@ -211,14 +222,14 @@ const ro: Record<DocumentKey, LegalDocumentContent> = {
         ],
       },
       {
-        title: "5. Transferuri internaționale",
+        title: "6. Transferuri internaționale",
         paragraphs: [
           "Unii furnizori (în special Cloudflare, Supabase și Google) fac parte din grupuri cu sediul în Statele Unite și pot procesa date și în afara Spațiului Economic European. Transferurile se realizează pe baza mecanismelor recunoscute de GDPR – clauzele contractuale standard ale Comisiei Europene (art. 46 alin. (2) GDPR) și, acolo unde este aplicabilă, decizia de adecvare privind Cadrul UE-SUA pentru confidențialitatea datelor (art. 45 GDPR) – completate cu măsuri suplimentare atunci când sunt necesare.",
           "O copie a garanțiilor aplicabile poate fi solicitată la adresa de e-mail indicată la punctul 1.",
         ],
       },
       {
-        title: "6. Perioade de păstrare",
+        title: "7. Perioade de păstrare",
         bullets: [
           "Solicitări fără contract: pe durata soluționării și cel mult 24 de luni de la ultima interacțiune, dacă nu există un litigiu sau o obligație legală de păstrare.",
           "Documente contractuale, contabile și de garanție: pe durata contractului și ulterior conform termenelor legale aplicabile.",
@@ -227,7 +238,7 @@ const ro: Record<DocumentKey, LegalDocumentContent> = {
         ],
       },
       {
-        title: "7. Drepturile persoanei vizate",
+        title: "8. Drepturile persoanei vizate",
         bullets: [
           "dreptul la informare și acces;",
           "dreptul la rectificare și, în cazurile prevăzute de lege, la ștergere;",
@@ -248,13 +259,13 @@ const ro: Record<DocumentKey, LegalDocumentContent> = {
         ],
       },
       {
-        title: "8. Decizii automate și minori",
+        title: "9. Decizii automate și minori",
         paragraphs: [
           "Site-ul nu ia decizii bazate exclusiv pe prelucrare automată și nu realizează profilare. Serviciile nu sunt adresate direct minorilor; persoanele sub 18 ani nu ar trebui să trimită formulare fără implicarea reprezentantului legal.",
         ],
       },
       {
-        title: "9. Securitate și actualizări",
+        title: "10. Securitate și actualizări",
         paragraphs: [
           "Sunt utilizate măsuri tehnice și organizatorice rezonabile pentru limitarea accesului, protejarea conturilor administrative și transmiterea securizată a datelor. Niciun sistem nu poate garanta securitate absolută.",
           "Politica poate fi actualizată atunci când se schimbă serviciile, furnizorii sau cerințele legale. Data versiunii curente este afișată la începutul paginii.",
@@ -462,7 +473,7 @@ const hu: Record<DocumentKey, LegalDocumentContent> = {
       "Hogyan gyűjti, használja, őrzi és védi a Dennis Cars Carei a személyes adatokat.",
     lead:
       "A tájékoztató az űrlapokon megadott adatok és a weboldal működéséhez szükséges technikai adatok kezelését ismerteti.",
-    updated: "Utolsó frissítés: 2026. augusztus 28.",
+    updated: "Utolsó frissítés: 2026. augusztus 29.",
     sections: [
       {
         title: "1. Adatkezelő",
@@ -503,7 +514,18 @@ const hu: Record<DocumentKey, LegalDocumentContent> = {
         ],
       },
       {
-        title: "4. Címzettek és szolgáltatók",
+        title: "4. Ügyfélfotók és a képmáshoz való jog",
+        paragraphs: [
+          "A weboldalon az autók átadásakor készült fényképek is szerepelnek, amelyeken azonosítható személyek tűnhetnek fel. Az olyan fénykép, amelyen egy személy felismerhető, személyes adat, a közzététele pedig önálló adatkezelés, amelynek célja a társaság tevékenységének bemutatása.",
+          "A jogalap a fényképen szereplő személy hozzájárulása – GDPR 6. cikk (1) a) –, a román polgári törvénykönyv 73. cikke szerinti képmáshoz való joggal együtt. Fényképet kizárólag a rajta szereplők hozzájárulásával teszünk közzé; kiskorú esetén a szülő vagy a törvényes képviselő hozzájárulása szükséges.",
+          "A hozzájárulás bármikor, indokolás nélkül és díjmentesen visszavonható. Kérésre a fényképet eltávolítjuk a weboldalról, illetve – ha az érintett ezt választja – az azonosítást lehetővé tevő részleteket, az arcot vagy a rendszámot, eltávolítás helyett letakarjuk. A visszavonás a korábbi közzététel jogszerűségét nem érinti.",
+        ],
+        footnotes: [
+          "A fényképen látható rendszám szintén személyes adatnak minősül, ha alkalmas a tulajdonos azonosítására. A letakarásra vagy eltávolításra irányuló kérést az 1. pontban megadott elérhetőségekre kell küldeni, és a lehető leghamarabb teljesítjük.",
+        ],
+      },
+      {
+        title: "5. Címzettek és szolgáltatók",
         paragraphs: [
           "Az adatokhoz csak a megkereséseket és a weboldalt kezelő személyek férhetnek hozzá. Szerződött IT-szolgáltatók tárhelyet, adatbázist, tárolást, biztonságot és karbantartást biztosíthatnak.",
           "A jelenleg igénybe vett szolgáltatók: Supabase (az űrlapokon érkező üzeneteket tároló adatbázis és az adminisztrátori fiók hitelesítése), Cloudflare (a weboldal kiszolgálása, a tartalomkézbesítő hálózat és az autófotók tárolása a Cloudflare R2-ben), valamint a Google Ireland Limited (kizárólag a beágyazott térkép). Az autók fotóit az üzemeltető Cloudflare-infrastruktúrája szolgálja ki, cookie nélkül, a weboldal működéséhez szükséges módon.",
@@ -512,14 +534,14 @@ const hu: Record<DocumentKey, LegalDocumentContent> = {
         ],
       },
       {
-        title: "5. Nemzetközi adattovábbítás",
+        title: "6. Nemzetközi adattovábbítás",
         paragraphs: [
           "Egyes szolgáltatók (különösen a Cloudflare, a Supabase és a Google) egyesült államokbeli székhelyű cégcsoport tagjai, és az EGT-n kívül is kezelhetnek adatokat. A továbbítás a GDPR által elismert garanciák alapján történik: az Európai Bizottság általános szerződéses feltételei (GDPR 46. cikk (2)) és – ahol alkalmazható – az EU–USA adatvédelmi keretre vonatkozó megfelelőségi határozat (GDPR 45. cikk) alapján, szükség esetén kiegészítő intézkedésekkel.",
           "Az alkalmazott garanciák másolata az 1. pontban megadott e-mail-címen kérhető.",
         ],
       },
       {
-        title: "6. Megőrzési idők",
+        title: "7. Megőrzési idők",
         bullets: [
           "Szerződés nélküli megkeresések: az ügy lezárásáig, legfeljebb az utolsó kapcsolatfelvételtől számított 24 hónapig, kivéve jogvita vagy kötelező megőrzés esetén.",
           "Szerződéses, számviteli és garanciális iratok: a szerződés alatt, majd a vonatkozó törvényi határidőkig.",
@@ -528,7 +550,7 @@ const hu: Record<DocumentKey, LegalDocumentContent> = {
         ],
       },
       {
-        title: "7. Az érintett jogai",
+        title: "8. Az érintett jogai",
         bullets: [
           "tájékoztatáshoz és hozzáféréshez való jog;",
           "helyesbítéshez és törvényi feltételek esetén törléshez való jog;",
@@ -549,13 +571,13 @@ const hu: Record<DocumentKey, LegalDocumentContent> = {
         ],
       },
       {
-        title: "8. Automatizált döntések és kiskorúak",
+        title: "9. Automatizált döntések és kiskorúak",
         paragraphs: [
           "A weboldal nem hoz kizárólag automatizált döntéseket és nem végez profilalkotást. A szolgáltatás nem kiskorúaknak szól; 18 év alatt űrlapot csak törvényes képviselő bevonásával küldjenek.",
         ],
       },
       {
-        title: "9. Biztonság és módosítások",
+        title: "10. Biztonság és módosítások",
         paragraphs: [
           "Ésszerű technikai és szervezési intézkedések védik az adminisztrációs hozzáférést és az adatok továbbítását. Teljes biztonság egyetlen rendszerben sem garantálható.",
           "A tájékoztató a szolgáltatások, szolgáltatók vagy jogszabályok változásakor frissülhet. A jelenlegi verzió dátuma az oldal tetején látható.",

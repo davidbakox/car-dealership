@@ -24,6 +24,13 @@ import Logo from "@/components/public/Logo";
 // template.tsx and plays the sequence. Covering the first paint would delay the
 // hero for a visitor who is still deciding whether to stay, which is the one
 // moment a flourish cannot be allowed to cost anything.
+//
+// BROWSER ONLY. On the server this module is evaluated once per process, not
+// once per request, so the flag survives between visitors: the second request
+// would render the wipe overlay that the browser's own first render never
+// produces, and React would throw away the whole server document and re-render
+// it on the client. On Cloudflare that mostly hid itself because a request
+// usually gets a fresh isolate — "usually" being the problem.
 let hasNavigated = false;
 
 // Deterministic spark layout — same reasoning as the mote fields: this renders
@@ -59,17 +66,23 @@ const SPARKS = (() => {
 export default function RouteTransition({ children }: { children: ReactNode }) {
   const reduce = useReducedMotion();
   // Read the flag during the first render, then arm it for later navigations.
+  // Server renders always answer "no": see the note on hasNavigated above.
   const [play] = useState(() => {
+    if (typeof window === "undefined") return false;
     const first = !hasNavigated;
     hasNavigated = true;
     return !first;
   });
 
-  if (reduce) return <>{children}</>;
+  // The element shape must not depend on `reduce` either: it is false while
+  // the server renders and can be true on the browser's very first render, and
+  // a wrapper that appears on one side but not the other is the same mismatch
+  // in a different disguise. Only the classes change.
+  const animate = play && !reduce;
 
   return (
     <>
-      {play && (
+      {animate && (
         <div className="page-wipe" aria-hidden="true">
           <div className="page-wipe-sparks">
             {SPARKS.map((s, i) => (
@@ -103,7 +116,7 @@ export default function RouteTransition({ children }: { children: ReactNode }) {
           </div>
         </div>
       )}
-      <div className={play ? "page-in" : undefined}>{children}</div>
+      <div className={animate ? "page-in" : undefined}>{children}</div>
     </>
   );
 }

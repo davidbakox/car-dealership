@@ -211,7 +211,8 @@
     "successContact": "Köszönjük az üzenetet — hamarosan válaszolunk.",
     "error": "Hiba történt. Kérjük, próbáld újra.",
     "auctionClosed": "Ez az árverés lezárult.",
-    "belowStart": "Az ajánlatod a kikiáltási ár alatt van."
+    "belowStart": "Az ajánlatod a kikiáltási ár alatt van.",
+    "errorRateLimited": "Túl sok űrlapot küldtél rövid idő alatt. Kérjük, próbáld újra pár perc múlva, vagy hívj minket közvetlenül."
   },
   "about": {
     "title": "Rólunk",

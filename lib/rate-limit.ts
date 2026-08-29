@@ -43,6 +43,56 @@ export async function checkLoginRate(
   return { allowed: used < MAX_ATTEMPTS, remaining: Math.max(0, MAX_ATTEMPTS - used) };
 }
 
+// ---------------------------------------------------------------------------
+//  Public forms
+// ---------------------------------------------------------------------------
+// The three public forms write into `offers` through the service role, so
+// nothing at the database level slows a script down any more. This puts a
+// ceiling on how often one address may submit.
+//
+// It reuses login_attempts rather than adding a table, because DDL against this
+// project has to be pasted into the Supabase SQL editor by hand and a limiter
+// that ships with the code is worth more than a tidier schema. The marker in
+// the `email` column keeps the two uses apart, the same way the markers in
+// `offers` separate the kinds of submission.
+const FORM_WINDOW_MINUTES = 15;
+const FORM_MAX_SUBMISSIONS = 5; // per IP, across all public forms
+const FORM_MARKER = "__public_form__";
+
+/** True when this address may submit again. Fails OPEN, like the login check. */
+export async function checkPublicFormRate(ip: string): Promise<boolean> {
+  if (!ip || ip === "unknown") return true;
+
+  const admin = createAdminClient();
+  const since = new Date(Date.now() - FORM_WINDOW_MINUTES * 60_000).toISOString();
+
+  const { count, error } = await admin
+    .from("login_attempts")
+    .select("id", { count: "exact", head: true })
+    .eq("ip", ip)
+    .eq("email", FORM_MARKER)
+    .gte("created_at", since);
+
+  if (error) {
+    // A database hiccup must never stop a real customer from reaching us.
+    console.error("form rate-limit check failed:", error.message);
+    return true;
+  }
+
+  return (count ?? 0) < FORM_MAX_SUBMISSIONS;
+}
+
+/** Record a submission against the window. Never throws into the action. */
+export async function recordPublicFormSubmission(ip: string): Promise<void> {
+  if (!ip || ip === "unknown") return;
+
+  const admin = createAdminClient();
+  const { error } = await admin
+    .from("login_attempts")
+    .insert({ ip, email: FORM_MARKER, succeeded: true });
+  if (error) console.error("form rate-limit record failed:", error.message);
+}
+
 /** Record an attempt (success clears the pressure on the next window). */
 export async function recordLoginAttempt(
   ip: string,

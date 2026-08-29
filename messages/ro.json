@@ -211,7 +211,8 @@
     "successContact": "Mulțumim pentru mesaj — revenim rapid cu un răspuns.",
     "error": "A apărut o problemă. Te rugăm încearcă din nou.",
     "auctionClosed": "Această licitație este închisă.",
-    "belowStart": "Oferta ta este sub prețul de pornire."
+    "belowStart": "Oferta ta este sub prețul de pornire.",
+    "errorRateLimited": "Ai trimis prea multe formulare într-un timp scurt. Te rugăm încearcă din nou peste câteva minute sau sună-ne direct."
   },
   "about": {
     "title": "Despre noi",

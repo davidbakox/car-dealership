@@ -16,6 +16,11 @@ import {
   fieldErrors,
 } from "@/lib/validation/schemas";
 import type { PublicFormState } from "@/lib/form-state";
+import { getClientIp } from "@/lib/request-ip";
+import {
+  checkPublicFormRate,
+  recordPublicFormSubmission,
+} from "@/lib/rate-limit";
 
 // Public form actions. Return neutral status codes; the client components map
 // them to translated copy (next-intl). Server-side validation via zod.
@@ -25,6 +30,17 @@ import type { PublicFormState } from "@/lib/form-state";
 
 function logWriteFailure(form: string, message: string) {
   console.error(`[public form] ${form} insert failed: ${message}`);
+}
+
+/**
+ * Shared guard for the public forms. Returns the failure state to hand straight
+ * back to the visitor, or null when the submission may proceed.
+ */
+async function guardRate(): Promise<PublicFormState | null> {
+  const ip = getClientIp();
+  if (!(await checkPublicFormRate(ip))) return { error: "rateLimited" };
+  await recordPublicFormSubmission(ip);
+  return null;
 }
 
 export async function submitInquiryAction(
@@ -39,6 +55,9 @@ export async function submitInquiryAction(
     message: formData.get("message"),
   });
   if (!parsed.success) return { fieldErrors: fieldErrors(parsed.error) };
+
+  const limited = await guardRate();
+  if (limited) return limited;
 
   // Service role: the anon INSERT policy on `offers` rejects any row that
   // references a car, so this submission never reached the table. See
@@ -128,6 +147,9 @@ export async function submitSellRequestAction(
   if (!parsed.success) return { fieldErrors: fieldErrors(parsed.error) };
 
   const d = parsed.data;
+  const limited = await guardRate();
+  if (limited) return limited;
+
   const composed =
     `${SELL_REQUEST_MARKER} ${d.car_make} ${d.car_model}, ${d.car_year}, ${d.car_mileage} km` +
     (d.message ? ` — ${d.message}` : "");
@@ -161,6 +183,9 @@ export async function submitContactAction(
     message: formData.get("message"),
   });
   if (!parsed.success) return { fieldErrors: fieldErrors(parsed.error) };
+
+  const limited = await guardRate();
+  if (limited) return limited;
 
   const supabase = createAdminClient();
   const { error } = await supabase.from("offers").insert({

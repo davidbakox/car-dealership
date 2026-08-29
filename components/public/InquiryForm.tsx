@@ -38,7 +38,7 @@ export default function InquiryForm({ carId }: { carId: string }) {
       <input type="hidden" name="car_id" value={carId} />
       {state.error && (
         <p className="rounded border border-red-500/40 bg-red-950/40 px-3 py-2 text-sm text-red-400">
-          {t("error")}
+          {t(state.error === "rateLimited" ? "errorRateLimited" : "error")}
         </p>
       )}
       <div>
