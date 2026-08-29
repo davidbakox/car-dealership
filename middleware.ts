@@ -9,6 +9,37 @@ type CookieToSet = { name: string; value: string; options: CookieOptions };
 
 const intlMiddleware = createIntlMiddleware(routing);
 
+// Sent on every response this middleware touches — which is every HTML route,
+// public and admin (see the matcher at the bottom).
+//
+// They are declared in next.config.mjs as well, because that is where they
+// belong and where `next start` and other hosts read them from. On Cloudflare
+// they have to be set here too: @cloudflare/next-on-pages does not carry the
+// next.config `headers()` block into the Pages output, so configuring them
+// there alone leaves production with no headers at all — verified against the
+// deployed site before this was added.
+//
+// The CSP stops short of `script-src`: doing that properly needs a per-request
+// nonce, and a script-src carrying 'unsafe-inline' would buy nothing while
+// risking a blank page.
+const SECURITY_HEADERS: Record<string, string> = {
+  "Content-Security-Policy":
+    "frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'",
+  "X-Frame-Options": "DENY",
+  "X-Content-Type-Options": "nosniff",
+  "Referrer-Policy": "strict-origin-when-cross-origin",
+  "Permissions-Policy":
+    "camera=(), microphone=(), geolocation=(), payment=(), usb=()",
+  "Strict-Transport-Security": "max-age=63072000; includeSubDomains; preload",
+};
+
+function withSecurityHeaders<T extends Response>(response: T): T {
+  for (const [key, value] of Object.entries(SECURITY_HEADERS)) {
+    response.headers.set(key, value);
+  }
+  return response;
+}
+
 // Two non-overlapping concerns, split by path:
 //  - Admin area (/admin-*)  -> Supabase session refresh + auth guard (no i18n).
 //  - API routes (/api/*)    -> Supabase session refresh only (routes self-guard).
@@ -17,10 +48,14 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   if (pathname.startsWith(ADMIN_PATH)) {
-    return handleSupabase(request, { guardAdmin: true });
+    return withSecurityHeaders(
+      await handleSupabase(request, { guardAdmin: true })
+    );
   }
   if (pathname.startsWith("/api")) {
-    return handleSupabase(request, { guardAdmin: false });
+    return withSecurityHeaders(
+      await handleSupabase(request, { guardAdmin: false })
+    );
   }
   // The site is Romanian first. `localeDetection` is off (see routing.ts), so
   // next-intl never reads `accept-language` and every unprefixed URL resolves
@@ -30,10 +65,10 @@ export async function middleware(request: NextRequest) {
   if (pathname === "/" && request.cookies.get(LOCALE_COOKIE)?.value === "hu") {
     const url = request.nextUrl.clone();
     url.pathname = "/hu";
-    return NextResponse.redirect(url);
+    return withSecurityHeaders(NextResponse.redirect(url));
   }
 
-  return intlMiddleware(request);
+  return withSecurityHeaders(intlMiddleware(request));
 }
 
 // Refresh the Supabase auth cookie and (for admin pages) redirect unauthenticated
