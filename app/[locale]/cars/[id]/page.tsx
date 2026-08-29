@@ -23,6 +23,16 @@ import { FEATURE_GROUPS, type Car, type CarStatus } from "@/lib/types";
 
 export const runtime = "edge";
 
+/** Serialise structured data so it cannot break out of the <script> block. */
+function toJsonLd(value: unknown): string {
+  return JSON.stringify(value)
+    .replace(/</g, "\\u003c")
+    .replace(/>/g, "\\u003e")
+    .replace(/&/g, "\\u0026")
+    .replace(/\u2028/g, "\\u2028")
+    .replace(/\u2029/g, "\\u2029");
+}
+
 const getCar = cache(async (id: string): Promise<Car | null> => {
   const supabase = createPublicClient();
   const { data } = await supabase.from("cars").select("*").eq("id", id).single();
@@ -175,7 +185,11 @@ export default async function CarDetailPage({
     <div className="pb-24 lg:pb-0">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        // JSON.stringify does not escape <, > or &, so a car title containing
+        // "</script>" would close this block and run whatever followed. Only
+        // the admin can set a title, but that is one compromised session away
+        // from being stored XSS on every visitor.
+        dangerouslySetInnerHTML={{ __html: toJsonLd(jsonLd) }}
       />
 
       <div className="mx-auto max-w-content px-4 py-6 sm:px-6">

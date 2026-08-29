@@ -59,8 +59,18 @@ export async function GET() {
 
 // Escape per RFC 4180: wrap in quotes if the value contains comma/quote/newline,
 // and double any embedded quotes.
+//
+// Also defuse spreadsheet formulas. Every value in this file came from a public
+// form, and a message beginning with =, +, - or @ is executed as a formula the
+// moment the export is opened in Excel or Sheets — which is how a stranger's
+// contact message turns into code running on the owner's machine. Prefixing
+// with an apostrophe is the standard mitigation: spreadsheets treat the cell as
+// text and hide the marker, while plain-text readers still show the value.
+const FORMULA_START = /^[=+\-@\t\r]/;
+
 function csvCell(value: unknown): string {
-  const s = String(value ?? "");
+  let s = String(value ?? "");
+  if (FORMULA_START.test(s)) s = "'" + s;
   if (/[",\r\n]/.test(s)) {
     return `"${s.replace(/"/g, '""')}"`;
   }

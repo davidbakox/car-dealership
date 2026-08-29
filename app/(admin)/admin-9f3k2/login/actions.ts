@@ -28,6 +28,10 @@ export async function loginAction(
   // ---- rate limit ----
   const rate = await checkLoginRate(ip, email);
   if (!rate.allowed) {
+    // Record it too: an attacker who keeps hammering during the lockout would
+    // otherwise let the window slide past their last logged attempt and be
+    // handed a fresh budget the moment it expires.
+    await recordLoginAttempt(ip, email, false);
     return { error: "rate_limited" };
   }
 

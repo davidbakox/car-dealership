@@ -67,24 +67,28 @@ export default async function ContactPage({
 
       <div className="grid gap-8 lg:grid-cols-2">
         <div className="space-y-6">
-          <div className="grid gap-3 sm:grid-cols-2">
+          {/* One card per row from `lg` up: this column is already half the
+              page, and splitting it again squeezed every label onto two lines
+              and broke the e-mail across a line mid-word. */}
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
             {info.map((row) => {
               const body = (
                 <>
-                  <span className="tile-icon h-11 w-11">
+                  <span className="tile-icon h-11 w-11 rounded-card">
                     <Icon name={row.icon} size={20} />
                   </span>
                   <span className="min-w-0">
-                    <span className="block text-[10px] font-medium uppercase tracking-[0.18em] text-ink-faint">
+                    <span className="block text-[11px] font-medium uppercase tracking-[0.12em] text-ink-faint">
                       {row.label}
                     </span>
-                    <span className="mt-1 block break-words font-medium leading-snug text-ink">
+                    <span className="mt-1 block font-medium leading-snug text-ink [overflow-wrap:anywhere]">
                       {row.value}
                     </span>
                   </span>
                 </>
               );
-              const shell = "tile-card group flex h-full items-start gap-4 p-5";
+              const shell =
+                "tile-card group flex h-full items-center gap-4 px-5 py-4";
               return row.href ? (
                 <a key={row.label} href={row.href} className={shell}>
                   {body}

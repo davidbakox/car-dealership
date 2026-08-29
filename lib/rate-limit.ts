@@ -8,39 +8,81 @@ import { createAdminClient } from "@/lib/supabase/admin";
 // A shared store (the DB) is required. login_attempts has no RLS policies, so
 // it is reachable only through the service-role client below.
 
+// Two ceilings, because one address and one account are different threats.
+//
+//  - Per (ip + email): stops someone sitting at a keyboard, or a script from a
+//    single host, working through a password list.
+//  - Per email, across every address: the limit above is worth nothing against
+//    a botnet, which simply presents a new IP for each guess. Since there is
+//    exactly one administrator, a burst of failures against that account is
+//    never legitimate no matter where it comes from, so the account itself is
+//    the thing that closes.
+//
+// The account window is deliberately the longer of the two: an attacker who
+// waits out a 15-minute lockout still only buys a handful of guesses an hour,
+// which puts any real password out of reach.
 const WINDOW_MINUTES = 15;
-const MAX_ATTEMPTS = 8; // per (ip + email) within the window
+const MAX_ATTEMPTS = 10; // per (ip + email) within the window
+
+const ACCOUNT_WINDOW_MINUTES = 60;
+const ACCOUNT_MAX_ATTEMPTS = 25; // per email, from any address, per hour
 
 export interface RateResult {
   allowed: boolean;
   remaining: number;
 }
 
-/** Count recent failed attempts for this ip/email and decide if allowed. */
+/** Count recent failed attempts and decide whether another one is allowed. */
 export async function checkLoginRate(
   ip: string,
   email: string
 ): Promise<RateResult> {
   const admin = createAdminClient();
   const since = new Date(Date.now() - WINDOW_MINUTES * 60_000).toISOString();
+  const accountSince = new Date(
+    Date.now() - ACCOUNT_WINDOW_MINUTES * 60_000
+  ).toISOString();
 
-  const { count, error } = await admin
-    .from("login_attempts")
-    .select("id", { count: "exact", head: true })
-    .eq("ip", ip)
-    .eq("email", email)
-    .eq("succeeded", false)
-    .gte("created_at", since);
+  const [perAddress, perAccount] = await Promise.all([
+    admin
+      .from("login_attempts")
+      .select("id", { count: "exact", head: true })
+      .eq("ip", ip)
+      .eq("email", email)
+      .eq("succeeded", false)
+      .gte("created_at", since),
+    admin
+      .from("login_attempts")
+      .select("id", { count: "exact", head: true })
+      .eq("email", email)
+      .eq("succeeded", false)
+      .gte("created_at", accountSince),
+  ]);
 
-  if (error) {
+  if (perAddress.error || perAccount.error) {
     // Fail OPEN on infra error so a DB hiccup can't lock out the sole admin,
     // but log for visibility.
-    console.error("rate-limit check failed:", error.message);
+    console.error(
+      "rate-limit check failed:",
+      (perAddress.error ?? perAccount.error)?.message
+    );
     return { allowed: true, remaining: MAX_ATTEMPTS };
   }
 
-  const used = count ?? 0;
-  return { allowed: used < MAX_ATTEMPTS, remaining: Math.max(0, MAX_ATTEMPTS - used) };
+  const fromAddress = perAddress.count ?? 0;
+  const againstAccount = perAccount.count ?? 0;
+
+  return {
+    allowed:
+      fromAddress < MAX_ATTEMPTS && againstAccount < ACCOUNT_MAX_ATTEMPTS,
+    remaining: Math.max(
+      0,
+      Math.min(
+        MAX_ATTEMPTS - fromAddress,
+        ACCOUNT_MAX_ATTEMPTS - againstAccount
+      )
+    ),
+  };
 }
 
 // ---------------------------------------------------------------------------
