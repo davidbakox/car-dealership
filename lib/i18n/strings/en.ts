@@ -106,7 +106,7 @@ export const en = {
   admin_cancel: "Cancel",
   admin_confirm_delete: "Delete this permanently?",
   admin_images: "Images",
-  admin_upload_hint: "JPG, PNG, WebP or AVIF · max 20 MB · automatically optimized · drag to reorder",
+  admin_upload_hint: "Works from a phone: any photo, resized automatically · the first image is the cover · reorder with the arrows",
   admin_mark_featured: "Featured",
   admin_status: "Status",
 

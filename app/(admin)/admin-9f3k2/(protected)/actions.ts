@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath, revalidateTag } from "next/cache";
+import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/auth";
 import { carSchema, auctionSchema, fieldErrors } from "@/lib/validation/schemas";
@@ -12,7 +12,6 @@ import {
   type InboxRow,
 } from "@/lib/inbox";
 import { deleteR2Images } from "@/lib/r2";
-import { CARS_CACHE_TAG } from "@/lib/cache-tags";
 
 // ---------------------------------------------------------------------------
 //  Cars
@@ -30,7 +29,6 @@ function parseImages(formData: FormData): string[] {
 }
 
 function revalidateCars() {
-  revalidateTag(CARS_CACHE_TAG);
   revalidatePath(`${ADMIN_PATH}/cars`);
   revalidatePath("/cars");
   revalidatePath("/");

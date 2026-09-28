@@ -12,12 +12,7 @@ export const ADMIN_PATH =
 export const CF_IMAGE_RESIZING =
   process.env.NEXT_PUBLIC_CF_IMAGE_RESIZING === "true";
 
-// Image upload limits — enforced in the upload action AND at the bucket level.
-// Original files are compressed in the browser before being sent to R2.
-export const MAX_IMAGE_BYTES = 20 * 1024 * 1024; // 20 MB source file
-export const ALLOWED_IMAGE_TYPES = [
-  "image/jpeg",
-  "image/png",
-  "image/webp",
-  "image/avif",
-] as const;
+// Largest photo the admin uploader will pick up. Originals never leave the
+// browser: they are shrunk to WebP/JPEG first, and lib/r2.ts caps what is
+// actually stored (5 MB, JPEG/PNG/WebP/AVIF).
+export const MAX_IMAGE_BYTES = 50 * 1024 * 1024; // 50 MB source file

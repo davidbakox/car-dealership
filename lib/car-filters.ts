@@ -93,7 +93,7 @@ export function activeFilterCount(f: CarFilters): number {
 //
 // Filtering runs in JS over the full (small) catalogue rather than in SQL.
 // A dealership stock is tens of cars, the rows are tiny, and the whole list is
-// already cached for 60s by createPublicClient() — so one cached read beats a
+// fetched in one small read per request — so one read beats a
 // new round-trip per filter combination, and it sidesteps Postgres ordering the
 // `status` enum in its declaration order. If stock ever grows past a few
 // hundred cars, move this into the query with .in()/.range() instead.

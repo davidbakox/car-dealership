@@ -41,7 +41,7 @@ export const hu: Partial<Record<keyof typeof en, string>> = {
   admin_cancel: "Mégse",
   admin_confirm_delete: "Véglegesen törlöd?",
   admin_images: "Képek",
-  admin_upload_hint: "JPG, PNG, WebP vagy AVIF · max. 20 MB · automatikus optimalizálás · húzással átrendezhető",
+  admin_upload_hint: "Telefonról is: bármilyen fotó, automatikusan kicsinyítve · az első kép a borító · a nyilakkal rendezhető",
   admin_mark_featured: "Kiemelt",
   admin_status: "Állapot",
 

@@ -38,7 +38,7 @@ export default async function AdminSellRequestsPage() {
       </div>
 
       <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm">
-        <table className="w-full text-sm">
+        <table className="admin-table w-full text-sm">
           <thead>
             <tr className="border-b border-slate-200 text-left text-slate-500">
               <th className="p-3">{t.col_date}</th>
@@ -55,11 +55,11 @@ export default async function AdminSellRequestsPage() {
                 key={request.id}
                 className="border-b border-slate-100 align-top last:border-b-0"
               >
-                <td className="whitespace-nowrap p-3 text-slate-500">
+                <td data-label={t.col_date} className="whitespace-nowrap p-3 text-slate-500">
                   {formatDateTime(request.created_at)}
                 </td>
-                <td className="p-3 font-medium">{request.buyer_name}</td>
-                <td className="whitespace-nowrap p-3">
+                <td data-label={t.col_name} className="p-3 font-medium">{request.buyer_name}</td>
+                <td data-label={t.col_phone} className="whitespace-nowrap p-3">
                   <a
                     href={`tel:${request.buyer_phone}`}
                     className="hover:text-brand hover:underline"
@@ -67,7 +67,7 @@ export default async function AdminSellRequestsPage() {
                     {request.buyer_phone}
                   </a>
                 </td>
-                <td className="p-3">
+                <td data-label={t.col_email} className="p-3">
                   <a
                     href={`mailto:${request.buyer_email}`}
                     className="hover:text-brand hover:underline"
@@ -75,7 +75,7 @@ export default async function AdminSellRequestsPage() {
                     {request.buyer_email}
                   </a>
                 </td>
-                <td className="max-w-lg whitespace-pre-wrap p-3 text-slate-700">
+                <td data-label="Autó és üzenet" className="max-w-lg whitespace-pre-wrap p-3 text-slate-700">
                   {requestDetails(request.message)}
                 </td>
                 <td className="p-3 text-right">

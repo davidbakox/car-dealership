@@ -29,7 +29,7 @@ export default async function AdminOffersPage() {
       </div>
 
       <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm">
-        <table className="w-full text-sm">
+        <table className="admin-table w-full text-sm">
           <thead>
             <tr className="border-b border-slate-200 text-left text-slate-500">
               <th className="p-3">{t.col_date}</th>
@@ -44,17 +44,21 @@ export default async function AdminOffersPage() {
           <tbody>
             {offers.map((o) => (
               <tr key={o.id} className="border-b border-slate-100 align-top">
-                <td className="whitespace-nowrap p-3 text-slate-500">
+                <td data-label={t.col_date} className="whitespace-nowrap p-3 text-slate-500">
                   {formatDateTime(o.created_at)}
                 </td>
-                <td className="p-3 font-medium">{o.buyer_name}</td>
-                <td className="whitespace-nowrap p-3">{o.buyer_phone}</td>
-                <td className="p-3">{o.buyer_email}</td>
-                <td className="whitespace-nowrap p-3">{formatPrice(o.amount)}</td>
-                <td className="p-3">
+                <td data-label={t.col_name} className="p-3 font-medium">{o.buyer_name}</td>
+                <td data-label={t.col_phone} className="whitespace-nowrap p-3">
+                  <a href={`tel:${o.buyer_phone}`} className="hover:text-brand hover:underline">
+                    {o.buyer_phone}
+                  </a>
+                </td>
+                <td data-label={t.col_email} className="p-3">{o.buyer_email}</td>
+                <td data-label={t.col_amount} className="whitespace-nowrap p-3">{formatPrice(o.amount)}</td>
+                <td data-label={t.col_item} className="p-3">
                   {o.car ? o.car.title : o.auction_id ? "Auction" : "—"}
                 </td>
-                <td className="max-w-xs p-3 text-slate-600">{o.message}</td>
+                <td data-label={t.col_message} className="max-w-xs p-3 text-slate-600">{o.message}</td>
               </tr>
             ))}
             {offers.length === 0 && (

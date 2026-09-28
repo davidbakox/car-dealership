@@ -35,7 +35,7 @@ export default async function AdminMessagesPage() {
       <h1 className="text-2xl font-semibold">{t.admin_messages}</h1>
 
       <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm">
-        <table className="w-full text-sm">
+        <table className="admin-table w-full text-sm">
           <thead>
             <tr className="border-b border-slate-200 text-left text-slate-500">
               <th className="p-3">{t.col_date}</th>
@@ -50,13 +50,17 @@ export default async function AdminMessagesPage() {
           <tbody>
             {messages.map((m) => (
               <tr key={m.id} className="border-b border-slate-100 align-top">
-                <td className="whitespace-nowrap p-3 text-slate-500">
+                <td data-label={t.col_date} className="whitespace-nowrap p-3 text-slate-500">
                   {formatDateTime(m.created_at)}
                 </td>
-                <td className="p-3 font-medium">{m.name}</td>
-                <td className="whitespace-nowrap p-3">{m.phone}</td>
-                <td className="p-3">{m.email}</td>
-                <td className="p-3">
+                <td data-label={t.col_name} className="p-3 font-medium">{m.name}</td>
+                <td data-label={t.col_phone} className="whitespace-nowrap p-3">
+                  <a href={`tel:${m.phone}`} className="hover:text-brand hover:underline">
+                    {m.phone}
+                  </a>
+                </td>
+                <td data-label={t.col_email} className="p-3">{m.email}</td>
+                <td data-label={t.col_subject} className="p-3">
                   {m.car ? (
                     <Link
                       href={`${ADMIN_PATH}/cars/${m.car.id}/edit`}
@@ -74,7 +78,7 @@ export default async function AdminMessagesPage() {
                     </span>
                   )}
                 </td>
-                <td className="max-w-md p-3 text-slate-600">{m.message}</td>
+                <td data-label={t.col_message} className="max-w-md p-3 text-slate-600">{m.message}</td>
                 <td className="p-3 text-right">
                   <form action={deleteContactMessageAction}>
                     <input type="hidden" name="id" value={m.id} />

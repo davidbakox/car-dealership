@@ -52,7 +52,7 @@ function SaveButton() {
     <button
       type="submit"
       disabled={pending}
-      className="rounded-lg bg-brand px-5 py-2.5 font-medium text-white hover:bg-brand-light disabled:opacity-60"
+      className="flex-1 rounded-lg bg-brand px-5 py-3 font-medium text-white hover:bg-brand-light disabled:opacity-60 sm:flex-none sm:py-2.5"
     >
       {pending ? t.admin_saving : t.admin_save}
     </button>
@@ -117,6 +117,7 @@ export default function CarForm({ car }: { car?: Car }) {
           <input
             name="year"
             type="number"
+            inputMode="numeric"
             defaultValue={car?.year ?? new Date().getFullYear()}
             className={input}
             required
@@ -126,6 +127,7 @@ export default function CarForm({ car }: { car?: Car }) {
           <input
             name="mileage"
             type="number"
+            inputMode="numeric"
             defaultValue={car?.mileage ?? 0}
             className={input}
             required
@@ -157,6 +159,7 @@ export default function CarForm({ car }: { car?: Car }) {
           <input
             name="price"
             type="number"
+            inputMode="decimal"
             step="0.01"
             defaultValue={car?.price}
             className={input}
@@ -212,6 +215,7 @@ export default function CarForm({ car }: { car?: Car }) {
           <input
             name="seats"
             type="number"
+            inputMode="numeric"
             min={1}
             max={9}
             defaultValue={car?.seats ?? ""}
@@ -327,7 +331,7 @@ export default function CarForm({ car }: { car?: Car }) {
                 </legend>
                 <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                   {g.items.map((f) => (
-                    <label key={f} className="flex cursor-pointer items-center gap-2 text-sm">
+                    <label key={f} className="flex cursor-pointer items-center gap-2 py-1 text-sm sm:py-0">
                       <input
                         type="checkbox"
                         name="features"
@@ -379,11 +383,13 @@ export default function CarForm({ car }: { car?: Car }) {
         <ImageUploader initial={car?.images ?? []} />
       </div>
 
-      <div className="flex items-center gap-3">
+      {/* Pinned to the bottom of the screen on a phone, so saving never means
+          scrolling back past seventy equipment checkboxes. */}
+      <div className="sticky bottom-0 z-20 -mx-3 flex items-center gap-3 border-t border-slate-200 bg-slate-50/95 px-3 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] backdrop-blur sm:static sm:mx-0 sm:border-0 sm:bg-transparent sm:p-0">
         <SaveButton />
         <Link
           href={`${ADMIN_PATH}/cars`}
-          className="rounded-lg border border-slate-300 px-5 py-2.5 text-slate-600 hover:bg-slate-100"
+          className="rounded-lg border border-slate-300 bg-white px-5 py-3 text-slate-600 hover:bg-slate-100 sm:py-2.5"
         >
           {t.admin_cancel}
         </Link>
