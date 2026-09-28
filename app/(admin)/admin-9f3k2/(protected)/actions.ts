@@ -92,7 +92,10 @@ export async function saveCarAction(
   }
 
   revalidateCars();
-  redirect(`${ADMIN_PATH}/cars`);
+  // No redirect() here: CarForm navigates itself on { ok: true }. That way an
+  // empty result can only mean the request never reached this action (a form
+  // left open across a deploy), and the form can recover instead of crashing.
+  return { ok: true };
 }
 
 export async function deleteCarAction(formData: FormData): Promise<void> {

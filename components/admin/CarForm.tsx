@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useFormState, useFormStatus } from "react-dom";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import ImageUploader from "./ImageUploader";
 import ColorSwatch from "@/components/ui/ColorSwatch";
 import { saveCarAction } from "@/app/(admin)/admin-9f3k2/(protected)/actions";
@@ -63,11 +64,63 @@ const input =
   "w-full rounded-lg border border-slate-300 px-3 py-2 outline-none focus:border-brand focus:ring-1 focus:ring-brand";
 
 export default function CarForm({ car }: { car?: Car }) {
+  const router = useRouter();
+  const formRef = useRef<HTMLFormElement>(null);
+  const draftKey = `dennis-car-draft:${car?.id ?? "new"}`;
+  const [images, setImages] = useState<string[]>(car?.images ?? []);
+  const [uploaderKey, setUploaderKey] = useState(0);
+  const [restored, setRestored] = useState(false);
+
+  // If this page was opened before a deploy, the save goes to a server action
+  // that no longer exists. The server answers with an HTML page, and Next
+  // resolves the action with `undefined` — which used to crash the whole page
+  // ("Application error: a client-side exception") and throw away everything
+  // typed and uploaded. saveCarAction always returns an object, so an empty
+  // result means exactly that: keep the draft, reload onto the new build, and
+  // put the draft back (see the effect below).
   const [state, formAction] = useFormState<ActionState, FormData>(
-    saveCarAction,
+    async (prev, formData) => {
+      let result: ActionState | undefined;
+      try {
+        result = await saveCarAction(prev, formData);
+      } catch (cause) {
+        const offline =
+          cause instanceof TypeError || (typeof navigator !== "undefined" && !navigator.onLine);
+        if (offline) {
+          return {
+            error:
+              "Nem sikerült elérni a szervert (internetkapcsolat?). Az adatok megmaradtak, próbáld újra.",
+          };
+        }
+      }
+      if (result) return result;
+
+      try {
+        sessionStorage.setItem(
+          draftKey,
+          JSON.stringify(
+            Array.from(formData.entries()).filter(
+              (entry): entry is [string, string] => typeof entry[1] === "string"
+            )
+          )
+        );
+      } catch {
+        return {
+          error: "Az oldal közben frissült. Töltsd újra az oldalt, és mentsd újra.",
+        };
+      }
+      window.location.reload();
+      return { error: "Az oldal közben frissült, újratöltés…" };
+    },
     {}
   );
-  const fe = state.fieldErrors ?? {};
+  const fe = state?.fieldErrors ?? {};
+
+  useEffect(() => {
+    if (!state?.ok) return;
+    router.push(`${ADMIN_PATH}/cars`);
+    router.refresh();
+  }, [state, router]);
 
   // Equipment is controlled so each group can show how many boxes are ticked
   // and offer an all/none shortcut — with ~70 options, hunting through plain
@@ -92,11 +145,65 @@ export default function CarForm({ car }: { car?: Car }) {
       return next;
     });
 
+  // Put back a draft saved by the recovery path above.
+  useEffect(() => {
+    let raw: string | null = null;
+    try {
+      raw = sessionStorage.getItem(draftKey);
+      sessionStorage.removeItem(draftKey);
+    } catch {
+      return;
+    }
+    const form = formRef.current;
+    if (!raw || !form) return;
+    let entries: [string, string][];
+    try {
+      entries = JSON.parse(raw);
+    } catch {
+      return;
+    }
+    const values = new Map<string, string[]>();
+    for (const [k, v] of entries) values.set(k, [...(values.get(k) ?? []), v]);
+
+    setFeatures(new Set(values.get("features") ?? []));
+    try {
+      setImages(JSON.parse(values.get("images")?.[0] ?? "[]"));
+      setUploaderKey((k) => k + 1);
+    } catch {
+      // keep the images the page loaded with
+    }
+    for (const el of Array.from(form.elements)) {
+      if (
+        !(el instanceof HTMLInputElement) &&
+        !(el instanceof HTMLSelectElement) &&
+        !(el instanceof HTMLTextAreaElement)
+      ) {
+        continue;
+      }
+      if (!el.name || ["features", "images", "id"].includes(el.name)) continue;
+      if (el.type === "file") continue;
+      const vals = values.get(el.name) ?? [];
+      if (el instanceof HTMLInputElement && (el.type === "checkbox" || el.type === "radio")) {
+        el.checked = vals.includes(el.value);
+      } else if (vals.length > 0) {
+        el.value = vals[0];
+      }
+    }
+    setRestored(true);
+  }, [draftKey]);
+
   return (
-    <form action={formAction} className="max-w-3xl space-y-6">
+    <form ref={formRef} action={formAction} className="max-w-3xl space-y-6">
       {car && <input type="hidden" name="id" value={car.id} />}
 
-      {state.error && (
+      {restored && (
+        <p className="rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-800">
+          Az oldal közben frissült, ezért újratöltöttük. A beírt adatokat és a
+          képeket visszaállítottuk — nézd át, és nyomd meg újra a Mentést.
+        </p>
+      )}
+
+      {state?.error && (
         <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
           {state.error}
         </p>
@@ -380,7 +487,7 @@ export default function CarForm({ car }: { car?: Car }) {
 
       <div>
         <span className="mb-2 block text-sm font-medium">{t.admin_images}</span>
-        <ImageUploader initial={car?.images ?? []} />
+        <ImageUploader key={uploaderKey} initial={images} />
       </div>
 
       {/* Pinned to the bottom of the screen on a phone, so saving never means
