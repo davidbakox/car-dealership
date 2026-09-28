@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 import { createPublicClient } from "@/lib/supabase/public";
-import { SITE_URL } from "@/lib/env";
-import { routing, getPathname } from "@/i18n/routing";
+import { routing } from "@/i18n/routing";
+import { absoluteUrl, localeAlternates } from "@/lib/seo";
 
 export const runtime = "edge";
 
@@ -17,29 +17,45 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const entries: MetadataRoute.Sitemap = [];
 
-  for (const locale of routing.locales) {
-    const abs = (path: string) => `${SITE_URL}${path}`;
+  type Href = Parameters<typeof absoluteUrl>[1];
+  // Each URL lists its other-language twin (hreflang), so Google pairs the
+  // RO and HU versions instead of treating them as duplicates.
+  const entry = (
+    locale: string,
+    href: Href,
+    changeFrequency: MetadataRoute.Sitemap[number]["changeFrequency"],
+    priority: number,
+    lastModified?: string
+  ): MetadataRoute.Sitemap[number] => ({
+    url: absoluteUrl(locale, href),
+    lastModified,
+    changeFrequency,
+    priority,
+    alternates: { languages: localeAlternates(locale, href).languages as Record<string, string> },
+  });
 
+  for (const locale of routing.locales) {
     entries.push(
-      { url: abs(getPathname({ href: "/", locale })), changeFrequency: "daily", priority: 1 },
-      { url: abs(getPathname({ href: "/cars", locale })), changeFrequency: "daily", priority: 0.9 },
-      { url: abs(getPathname({ href: "/sell", locale })), changeFrequency: "monthly", priority: 0.8 },
-      { url: abs(getPathname({ href: "/about", locale })), changeFrequency: "monthly", priority: 0.5 },
-      { url: abs(getPathname({ href: "/contact", locale })), changeFrequency: "monthly", priority: 0.5 },
-      { url: abs(getPathname({ href: "/legal", locale })), changeFrequency: "yearly", priority: 0.3 },
-      { url: abs(getPathname({ href: "/privacy", locale })), changeFrequency: "yearly", priority: 0.3 },
-      { url: abs(getPathname({ href: "/cookies", locale })), changeFrequency: "yearly", priority: 0.3 }
+      entry(locale, "/", "daily", 1),
+      entry(locale, "/cars", "daily", 0.9),
+      entry(locale, "/sell", "monthly", 0.8),
+      entry(locale, "/about", "monthly", 0.5),
+      entry(locale, "/contact", "monthly", 0.5),
+      entry(locale, "/legal", "yearly", 0.3),
+      entry(locale, "/privacy", "yearly", 0.3),
+      entry(locale, "/cookies", "yearly", 0.3)
     );
 
     for (const car of cars) {
-      entries.push({
-        url: abs(
-          getPathname({ href: { pathname: "/cars/[id]", params: { id: car.id } }, locale })
-        ),
-        lastModified: car.created_at,
-        changeFrequency: "weekly",
-        priority: 0.7,
-      });
+      entries.push(
+        entry(
+          locale,
+          { pathname: "/cars/[id]", params: { id: car.id } },
+          "weekly",
+          0.7,
+          car.created_at
+        )
+      );
     }
   }
 

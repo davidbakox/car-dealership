@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { useTranslations } from "next-intl";
@@ -14,6 +15,7 @@ import { sortByAvailability } from "@/lib/pricing";
 import { modelsByMake } from "@/lib/car-filters";
 import { PHONE_HREF } from "@/lib/contact";
 import type { Car } from "@/lib/types";
+import { dealerJsonLd, localeAlternates, toJsonLd } from "@/lib/seo";
 
 export const runtime = "edge";
 
@@ -25,6 +27,19 @@ const whyItems = [
   { icon: "repeat", key: "tradein" },
   { icon: "pin", key: "local" },
 ] as const;
+
+export async function generateMetadata({
+  params: { locale },
+}: {
+  params: { locale: string };
+}): Promise<Metadata> {
+  const t = await getTranslations({ locale, namespace: "meta" });
+  return {
+    title: { absolute: t("homeTitle") },
+    description: t("homeDescription"),
+    alternates: localeAlternates(locale, "/"),
+  };
+}
 
 export default async function HomePage({
   params: { locale },
@@ -77,6 +92,10 @@ export default async function HomePage({
 
   return (
     <div>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: toJsonLd(dealerJsonLd(locale)) }}
+      />
       <Hero
         heroCar={heroCar}
         makes={makes}

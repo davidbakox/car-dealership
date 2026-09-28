@@ -3,14 +3,14 @@ import { cache } from "react";
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { createPublicClient } from "@/lib/supabase/public";
-import { getPathname, Link } from "@/i18n/routing";
+import { Link } from "@/i18n/routing";
 import Gallery from "@/components/public/Gallery";
 import InquiryForm from "@/components/public/InquiryForm";
 import StatusBadge from "@/components/ui/StatusBadge";
 import Icon from "@/components/ui/Icon";
 import ColorSwatch from "@/components/ui/ColorSwatch";
 import { formatPrice, formatNumber } from "@/lib/format";
-import { SITE_URL } from "@/lib/env";
+import { absoluteUrl, localeAlternates, toJsonLd } from "@/lib/seo";
 import {
   PHONE,
   PHONE_HREF,
@@ -23,29 +23,14 @@ import { FEATURE_GROUPS, type Car, type CarStatus } from "@/lib/types";
 
 export const runtime = "edge";
 
-/** Serialise structured data so it cannot break out of the <script> block. */
-function toJsonLd(value: unknown): string {
-  return JSON.stringify(value)
-    .replace(/</g, "\\u003c")
-    .replace(/>/g, "\\u003e")
-    .replace(/&/g, "\\u0026")
-    .replace(/\u2028/g, "\\u2028")
-    .replace(/\u2029/g, "\\u2029");
-}
-
 const getCar = cache(async (id: string): Promise<Car | null> => {
   const supabase = createPublicClient();
   const { data } = await supabase.from("cars").select("*").eq("id", id).single();
   return (data as Car) ?? null;
 });
 
-function absoluteUrl(locale: string, id: string) {
-  const path = getPathname({
-    href: { pathname: "/cars/[id]", params: { id } },
-    locale: locale as "ro" | "hu",
-  });
-  return `${SITE_URL}${path}`;
-}
+const carHref = (id: string) =>
+  ({ pathname: "/cars/[id]", params: { id } }) as const;
 
 export async function generateMetadata({
   params: { locale, id },
@@ -58,11 +43,11 @@ export async function generateMetadata({
     car.description?.slice(0, 160) ||
     `${car.year} ${car.make} ${car.model} — ${formatPrice(car.price, car.currency)}`;
   const cover = car.images[0];
-  const url = absoluteUrl(locale, id);
+  const url = absoluteUrl(locale, carHref(id));
   return {
     title: car.title,
     description: desc,
-    alternates: { canonical: url },
+    alternates: localeAlternates(locale, carHref(id)),
     openGraph: {
       title: car.title,
       description: desc,
@@ -128,7 +113,7 @@ export default async function CarDetailPage({
         car.status === "available"
           ? "https://schema.org/InStock"
           : "https://schema.org/SoldOut",
-      url: absoluteUrl(locale, id),
+      url: absoluteUrl(locale, carHref(id)),
     },
   };
 

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { localeAlternates } from "@/lib/seo";
 import { setRequestLocale } from "next-intl/server";
 import LegalDocument from "@/components/public/LegalDocument";
 import { getLegalContent } from "@/lib/legal-content";
@@ -11,7 +12,11 @@ export function generateMetadata({
   params: { locale: string };
 }): Metadata {
   const content = getLegalContent(locale, "cookies");
-  return { title: content.title, description: content.description };
+  return {
+    title: content.title,
+    description: content.description,
+    alternates: localeAlternates(locale, "/cookies"),
+  };
 }
 
 export default function CookiesPage({

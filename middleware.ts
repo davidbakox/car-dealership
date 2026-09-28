@@ -40,12 +40,27 @@ function withSecurityHeaders<T extends Response>(response: T): T {
   return response;
 }
 
+// The site answers on three hosts. Search engines must see exactly one, or
+// they split the ranking between duplicates — so the other two 301 to the
+// canonical domain (the same one NEXT_PUBLIC_SITE_URL names). Hashed preview
+// deployments (<hash>.dennis-cars-carei.pages.dev) are left alone.
+const CANONICAL_HOST = "denniscars.ro";
+const ALIAS_HOSTS = new Set(["www.denniscars.ro", "dennis-cars-carei.pages.dev"]);
+
 // Two non-overlapping concerns, split by path:
 //  - Admin area (/admin-*)  -> Supabase session refresh + auth guard (no i18n).
 //  - API routes (/api/*)    -> Supabase session refresh only (routes self-guard).
 //  - Everything else        -> next-intl locale routing (public site).
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  if (ALIAS_HOSTS.has(request.nextUrl.hostname)) {
+    const url = request.nextUrl.clone();
+    url.protocol = "https:";
+    url.host = CANONICAL_HOST;
+    url.port = "";
+    return withSecurityHeaders(NextResponse.redirect(url, 301));
+  }
 
   if (pathname.startsWith(ADMIN_PATH)) {
     return withSecurityHeaders(

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { localeAlternates } from "@/lib/seo";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import SellForm from "@/components/public/SellForm";
 import Reveal from "@/components/ui/Reveal";
@@ -13,7 +14,11 @@ export async function generateMetadata({
   params: { locale: string };
 }): Promise<Metadata> {
   const t = await getTranslations({ locale, namespace: "meta" });
-  return { title: t("sellTitle"), description: t("sellDescription") };
+  return {
+    title: t("sellTitle"),
+    description: t("sellDescription"),
+    alternates: localeAlternates(locale, "/sell"),
+  };
 }
 
 // Consignment page: the dealership lists and sells qualifying customer cars.
